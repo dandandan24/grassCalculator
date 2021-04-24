@@ -1,11 +1,10 @@
 
 import './App.css';
+import Container from './Components/container'
 
 function App() {
   return (
-    <div>
-      Grass Calc
-    </div>
+    <Container></Container>
   );
 }
 
