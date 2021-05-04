@@ -9,7 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab';
 import calc from '@material-ui/icons/'
 import CalcWindow from './CalcWindow/CalcWindow';
-
+import KonvaContainer from './Konva/KonvaContainer'
 
 const Container = () => {
 
@@ -43,12 +43,12 @@ const Container = () => {
             </Grid>
             <Grid item xl = {1} md  = {2} xs = {3} style ={ {marginTop:'15px' , marginRight : '15px'}}>
                 <Fab onClick = {handleOpen} variant = 'extended' style = {{width : '100%', color :'black' , backgroundColor : '#AFD5AA'}}>
-                    <p style = {{}}>חשב</p>                   
+                    <p style = {{color : 'white'}}>חשב</p>                   
                 </Fab>
             </Grid>
             <Grid xl = {11} xs = {11}>
-                <div style = {{border : '2px solid grey', borderRadius : '5px' , height : '75vh' , width: '97vw' , marginRight : '20px' , marginTop : '20px'}}>
-                    here will be the drawing surface
+                <div id = "parent" style = {{border : '2px solid grey', borderRadius : '5px' , height : '75vh' , width: '97vw' , marginRight : '20px' , marginTop : '20px'}}>
+                    <KonvaContainer></KonvaContainer>
                 </div>
             </Grid>
             <Grid xl = {12} xs = {12}  style = {{height : '90%', width : '90%'}}>

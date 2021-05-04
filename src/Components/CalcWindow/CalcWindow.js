@@ -7,8 +7,9 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import RollsTable from './RollsTable'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles , withStyles} from '@material-ui/core/styles';
 import explain from './explain.PNG'
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
             width : '80%',
         },
       },
+   
 }))
 
 const CalcWindow = (props) => {
@@ -50,7 +52,7 @@ const CalcWindow = (props) => {
                         <Grid item xl = {12} xs = {12}>
                             <Paper className = {classes.root}>
                                 <Tabs value = {currentTab} indicatorColor = 'primary' textColor = 'primary' onChange = {handleTabChange}>
-                                    <Tab label="מינימום פחת" />
+                                    <Tab label="מינימום פחת" /> 
                                     <Tab label="מינימום פחת + כיוון סיב אחיד" />
                                     <Tab label="מינימום חיבורים" />
                                     <Tab label="מינימום חיבורים + כיוון סיב אחיד" />
