@@ -268,13 +268,10 @@ const KonvaContainer = (props) => {
         return(Math.sqrt(Math.pow(Math.abs(y1-y) , 2) + Math.pow(Math.abs(x1-x) , 2)))
     }
 
-
+    const Squarelines = [0,1,2,3,4,5,6,7,8,9,10]
  
     return(    
         <Grid container>
-            <Grid item xs = {12}>
-                <DrawToolBar></DrawToolBar>
-            </Grid>
             <Grid item xs = {12}>
             <Stage ref={setStageRef}
                 width = {Outerdiv ? Outerdiv.offsetWidth : 0}
@@ -283,6 +280,17 @@ const KonvaContainer = (props) => {
                 onMouseMove = {onMouseMove}
                 onMouseUp = {onMouseUp}
                > 
+                        <Layer>
+                            {Outerdiv ?
+                            Squarelines.map(number => {
+                                return(
+                                    <React.Fragment>
+                                        <Line points = {[0,(Outerdiv.offsetHeight/10)*number+2,Outerdiv.offsetWidth ,(Outerdiv.offsetHeight/10)*number]}  strokeWidth={2}  stroke= 'lightgrey'/>  
+                                        <Line points = {[(Outerdiv.offsetWidth/10)*number,0,(Outerdiv.offsetWidth/10)*number ,Outerdiv.offsetHeight]}  strokeWidth={2}  stroke= 'lightgrey'/>                                
+                                    </React.Fragment>                              
+                                )
+                            }) : <></>}
+                        </Layer>
                         <Layer>
                             <Line                                                        
                                 id = {currentLine ? currentLine.id : 0}

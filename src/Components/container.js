@@ -10,6 +10,7 @@ import Fab from '@material-ui/core/Fab';
 import calc from '@material-ui/icons/'
 import CalcWindow from './CalcWindow/CalcWindow';
 import KonvaContainer from './Konva/KonvaContainer'
+import DrawToolBar from './Konva/DrawToolBar'
 
 const Container = () => {
 
@@ -47,8 +48,14 @@ const Container = () => {
                 </Fab>
             </Grid>
             <Grid xl = {11} xs = {11}>
-                <div id = "parent" style = {{border : '2px solid grey', borderRadius : '5px' , height : '75vh' , width: '97vw' , marginRight : '20px' , marginTop : '20px'}}>
-                    <KonvaContainer></KonvaContainer>
+                <div style = {{border : '2px solid grey', borderRadius : '5px' , height : '75vh' , width: '97vw' , marginRight : '20px' , marginTop : '20px'}}>
+                    <div>
+                        <DrawToolBar></DrawToolBar>
+                    </div>
+                    <div id = "parent" style = {{height : '65vh' , width: '97vw' , marginTop : '20px'}}>
+                        <KonvaContainer></KonvaContainer>
+                    </div>
+                    
                 </div>
             </Grid>
             <Grid xl = {12} xs = {12}  style = {{height : '90%', width : '90%'}}>
