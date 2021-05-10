@@ -23,7 +23,7 @@ const DrawToolBar = (props) => {
                     <ToggleButton value = "Rect">
                         <Stop/>
                     </ToggleButton>
-                    <ToggleButton value = "Line">
+                    <ToggleButton value = "Polygon">
                         <ShowChart/>
                     </ToggleButton>
                     <ToggleButton value = "Circle">

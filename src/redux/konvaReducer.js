@@ -2,6 +2,7 @@
 
 const initial_state = {
     mode : 'Line',
+    stage : null
 }
 
 
@@ -11,6 +12,11 @@ const konvaReducer = (state = initial_state , action) => {
             return {
                 ...state,
                 mode : action.newMode
+            }   
+        case 'ChangeStage' : 
+            return {
+                ...state,
+                stage : action.newStage
             }   
     }
     return state
