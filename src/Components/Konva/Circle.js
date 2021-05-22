@@ -41,6 +41,13 @@ const Circular = ({ shapeProps, isSelected, onSelect, onChange }) => {
               radius : (Math.max(5, node.width() * scaleX))
             });
           }}
+          onDragMove = {(e) => {
+            onChange({
+              ...shapeProps,
+              x: e.target.x(),
+              y: e.target.y(),
+            });
+          }}
           onDragEnd={(e) => {
             onChange({
               ...shapeProps,

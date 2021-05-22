@@ -6,8 +6,9 @@ import { connect , dispatch } from "react-redux"
 import Rectangle from './Rectangle'
 import TransLine from './copiedPolygon'
 import Polygon from './Polygon'
-import { ContactlessOutlined } from '@material-ui/icons'
+import { ContactlessOutlined, ContactSupport } from '@material-ui/icons'
 import Circular from './Circle'
+import {Shape} from 'react-konva'
 
 const KonvaContainer = (props) => {
     let stage = null 
@@ -19,15 +20,22 @@ const KonvaContainer = (props) => {
     const [Rects , setRects] = useState([]);
     const [selectedId, selectShape] = useState(null);
     const [points , setpoints] = useState([])
+    const [anchorPoints , setAnchorPoints] = useState([])
     const [curMousePos , setcurMousePos] = useState([0,0])
     const [isMouseOverStartPoint ,setisMouseOverStartPoint] = useState(false)
     const [isFinished , setisFinished] = useState(false)
     const [Polygons , setPolygons] = useState([])
     const [DraggedPolygon,setDraggedPolygon] = useState(0)
-    const [DraggedPoint,setDraggedPoint] = useState(0)
+    const [DraggedPoint,setDraggedPoint] = useState(null)
     const [currentCircle , setCurrentCircle]= useState(null)
     const [circles , setCircles] = useState([])
     const [selectedcircleId , setSelectedcircleId] = useState(null)
+    const [startPoint , setStartPoint] = useState([30,60])
+    const [endPoint , setEndPoint] = useState([60,120])
+    const [curvePoint , setCurvePoint] = useState([45,90])
+    const [anchorCircles , setAnchorCircles] = useState([{x : startPoint[0] , y : startPoint[1] , radius : 5 , id  : 1 , stroke : 'black' , fill : 'grey'},{x : curvePoint[0] , y : curvePoint[1] , radius : 5 , id:3, stroke : 'black' , fill : 'grey'},{x : endPoint[0] , y : endPoint[1] , radius : 5 , id : 2, stroke : 'black' , fill : 'grey'}])
+    const [DraggedAnchor ,setDraggedAnchor] = useState(0)
+
 
     useEffect(() => {
         setOuterdiv(document.getElementById('parent'))
@@ -62,6 +70,15 @@ const KonvaContainer = (props) => {
                     return true
                 }
             }
+            for(let j = 0 ; j < Polygons[i]['anchorPoints'].length ; j+=1){
+                if(-10 <= point[0] - Polygons[i]['anchorPoints'][j][0] &&point[0] - Polygons[i]['anchorPoints'][j][0] <= 10&&-10 <= point[1] - Polygons[i]['anchorPoints'][j][1]&&point[1] - Polygons[i]['anchorPoints'][j][1] <= 10){
+                    return true
+                }
+                if(point[0] === Polygons[i]['anchorPoints'][Polygons[i]['anchorPoints'].length-1][0] && point[1] === Polygons[i]['anchorPoints'][Polygons[i]['anchorPoints'].length-1][1])
+                {
+                    return true
+                }
+            }
         }
         
         return false
@@ -86,13 +103,20 @@ const KonvaContainer = (props) => {
                 }
                 if (isMouseOverStartPoint && points.length >= 3) {
                     setisFinished(true)
-                    setPolygons([...Polygons , {flattenedPoints : [...flattenedPoints] , points : [...points] ,closed : true }])
+                    let anchorpoints = []
+                    flattenedPoints.map((point,index) => {
+                        if(index % 2 === 0 && index < flattenedPoints.length - 3){
+                            anchorpoints = [...anchorpoints , [(flattenedPoints[index] + flattenedPoints[index+2])/2 ,(flattenedPoints[index + 1] + flattenedPoints[index+3])/2 , false]]
+                        }
+                    })
+                    setPolygons([...Polygons , {flattenedPoints : [...flattenedPoints] , points : [...points],anchorPoints : [...anchorpoints] ,closed : true }])
                     setpoints([])
                     setcurMousePos([0,0])
                     setisFinished(false)
                     setisMouseOverStartPoint(false)
-                } else {
-                setpoints([...points , mousePos])
+                    console.log(anchorpoints)
+                } else {  
+                    setpoints([...points , mousePos])
                 }
         }
         }
@@ -226,30 +250,66 @@ const KonvaContainer = (props) => {
                 if(-3 <= pos[0] - Polygons[polygon]['points'][point][0]  && pos[0] - Polygons[polygon]['points'][point][0] <= 3 && -3 <= pos[1] - Polygons[polygon]['points'][point][1] &&pos[1] - Polygons[polygon]['points'][point][1]  <= 3 ){
                     setDraggedPolygon(polygon)
                     setDraggedPoint(point)
+                    console.log('draggingpoint')
+                }
+            }
+            for(let anchor = 0 ; anchor < Polygons[polygon]['anchorPoints'].length ; anchor++){
+                if(-3 <= pos[0] - Polygons[polygon]['anchorPoints'][anchor][0]  && pos[0] - Polygons[polygon]['anchorPoints'][anchor][0] <= 3 && -3 <= pos[1] - Polygons[polygon]['anchorPoints'][anchor][1] &&pos[1] - Polygons[polygon]['anchorPoints'][anchor][1]  <= 3 ){
+                    setDraggedPolygon(polygon)
+                    setDraggedAnchor(anchor)
+                    console.log('draggingAnchor')
                 }
             }
 
         }
+
       
     };
 
     const handleDragMovePoint = event => {
-        
-        const pos = [event.target.attrs.x, event.target.attrs.y];
-        let flattenddots = Polygons[DraggedPolygon]['flattenedPoints'];
-        let dots = Polygons[DraggedPolygon]['points']
-        const index = event.target.index - 1;
-        dots[DraggedPoint] = pos
-        flattenddots[DraggedPoint*2] = pos[0]
-        flattenddots[(DraggedPoint*2)+1] = pos[1]
-        if(DraggedPoint === 0){
-            flattenddots[Polygons[DraggedPolygon]['flattenedPoints'].length - 2] = pos[0]
-            flattenddots[Polygons[DraggedPolygon]['flattenedPoints'].length - 1] = pos[1]
+        if(DraggedPoint !== null) {
+            const pos = [event.target.attrs.x, event.target.attrs.y];
+            let flattenddots = Polygons[DraggedPolygon]['flattenedPoints'];
+            let dots = Polygons[DraggedPolygon]['points']
+            const index = event.target.index - 1;
+            dots[DraggedPoint] = pos
+            flattenddots[DraggedPoint*2] = pos[0]
+            flattenddots[(DraggedPoint*2)+1] = pos[1]
+            if(DraggedPoint === 0){
+                flattenddots[Polygons[DraggedPolygon]['flattenedPoints'].length - 2] = pos[0]
+                flattenddots[Polygons[DraggedPolygon]['flattenedPoints'].length - 1] = pos[1]
+            }
+            let anchorDots = [];
+            console.log(Polygons[DraggedPolygon]['anchorPoints'] , 'at start')
+            flattenddots.map((point,index) => {
+                if(index % 2 === 0 && index < flattenddots.length - 3 ){
+                    console.log(index)
+                    console.log(Polygons[DraggedPolygon]['anchorPoints'])
+                    console.log(flattenddots)
+                    if(Polygons[DraggedPolygon]['anchorPoints'][index/2][2] ===false){                             
+                        anchorDots = [...anchorDots , [(flattenddots[index] + flattenddots[index+2])/2 ,(flattenddots[index + 1] + flattenddots[index+3])/2 , false]]
+                    }
+                    if( Polygons[DraggedPolygon]['anchorPoints'][index/2][2] ===true){
+                        anchorDots = [...anchorDots , [...Polygons[DraggedPolygon]['anchorPoints'][index/2] , true]]
+                }
+
+                }
+            })
+            let CopyPolygons = [...Polygons]
+            CopyPolygons[DraggedPolygon]['flattenedPoints'] = flattenddots
+            CopyPolygons[DraggedPolygon]['points'] = dots
+            CopyPolygons[DraggedPolygon]['anchorPoints'] = anchorDots
+            setPolygons(CopyPolygons)
         }
-        let CopyPolygons = [...Polygons]
-        CopyPolygons[DraggedPolygon]['flattenedPoints'] = flattenddots
-        CopyPolygons[DraggedPolygon]['points'] = dots
-        setPolygons(CopyPolygons)
+        else{
+            const pos = [event.target.attrs.x, event.target.attrs.y , true];
+            let anchorDots  = Polygons[DraggedPolygon]['anchorPoints'];
+            anchorDots[DraggedAnchor] = pos
+            let CopyPolygons = [...Polygons]
+            CopyPolygons[DraggedPolygon]['anchorPoints'] = anchorDots
+            setPolygons(CopyPolygons)
+        }
+        
       };
 
     const handleDragOutPoint = event => {
@@ -257,8 +317,10 @@ const KonvaContainer = (props) => {
     };
 
     const handleDragEndPoint = () => {
-        console.log('not defined function')
+       setDraggedPoint(null)
+       setDraggedAnchor(null)
     }
+
     const flattenedPoints = points
         .concat(isFinished ? [] : curMousePos)
         .reduce((a, b) => a.concat(b), []);
@@ -384,7 +446,7 @@ const KonvaContainer = (props) => {
                                 
 
 
-
+                        
                             <Line
                                 points={flattenedPoints}
                                 stroke="black"
@@ -442,15 +504,48 @@ const KonvaContainer = (props) => {
                             {Polygons.map((poly , index) =>{       
                              return(     
                                  <>                
-                                  <Line
+                                  {/* <Line
                                   points={poly.flattenedPoints}
                                   stroke="black"
                                   strokeWidth={2}
                                   closed={poly.closed}
-                              />
-                              
+                              /> */}
+                                {poly.anchorPoints.map((point, index) => {  
+                                    return(
+                                    <>
+                                      <Shape
+                                      sceneFunc={(context, shape) => {
+                                         context.beginPath();
+                                         if(poly.points[index] && poly.points[index+1]){
+                                         context.moveTo(poly.points[index][0] , poly.points[index][1]);
+                                         context.quadraticCurveTo(point[0] , point[1],poly.points[index+1][0] ,poly.points[index+1][1]);
+                                         }
+                                         else{
+                                             if(index === poly.points.length-1){
+                                                context.moveTo(poly.points[index][0] , poly.points[index][1]);
+                                                context.quadraticCurveTo(point[0] , point[1],poly.points[0][0] ,poly.points[0][1]);
+                                             }
+                                         }
+                                         // (!) Konva specific method, it is very important
+                                         context.fillStrokeShape(shape);
+                                         }}
+                                         stroke="black"
+                                         strokeWidth={4}/>
+                                         <Line
+                                         dash= {[10, 10, 0, 10]}
+                                         strokeWidth= {3}
+                                         stroke='red'
+                                         lineCap='round'
+                                         id='quadLinePath'
+                                         opacity= {0.3}
+                                         points= {poly.points[index] && poly.points[index+1] ? [poly.points[index][0] , poly.points[index][1],point[0] , point[1],poly.points[index+1][0] ,poly.points[index+1][1]] : [poly.points[index][0] , poly.points[index][1],point[0] , point[1],poly.points[0][0] ,poly.points[0][1]]}/>
+                                     </>
+                                 
+                                    )    
+                                })}
+                        
                                 {poly.points.map((point, index) => {
-                                  
+                                   
                                     const width = 6;
                                     const x = point[0] - width / 2;
                                     const y = point[1] - width / 2;
@@ -496,8 +591,116 @@ const KonvaContainer = (props) => {
                                         <></>
                                     );
                                     })}
+                                  {poly.anchorPoints.map((point, index) => {
+                                   const width = 6;
+                                   const x = point[0] - width / 2;
+                                   const y = point[1] - width / 2;
+                                   const startPointAttr =
+                                   index === 0
+                                       ? {
+                                           hitStrokeWidth: 12,
+                                           onMouseOver: handleMouseOverStartPoint,
+                                           onMouseOut: handleMouseOutStartPoint
+                                       }
+                                       : null;
+                                   return (
+                                   props.mode === 'Polygon' ?                                   
+                                   <Rect
+                                       key={index}
+                                       x={x}
+                                       y={y}
+                                       width={width}
+                                       height={width}
+                                       fill="white"
+                                       stroke="#B6D4F8"
+                                       strokeWidth={3}
+                                       onDragStart={handleDragStartPoint}
+                                       onDragMove={handleDragMovePoint}
+                                       onDragEnd={handleDragEndPoint}
+                                       draggable
+                                       {...startPointAttr}
+                                   /> : <></>
+                                   );
+                               })}
                                 </>)
                             })}
+
+                    
+                        {anchorCircles[0] ?  
+                        <Circular 
+                            shapeProps = {anchorCircles[0]}
+                            key = {0}
+                            isSelected= {0 === selectedcircleId}
+                            onSelect={() => {
+                                props.ChangeMode(null)   
+                                setSelectedcircleId(0)   
+                                selectShape(null)      
+                                }}
+                                onChange={(newAttrs) => {
+                                    const anchorcircles = anchorCircles.slice();
+                                    anchorcircles[0] = newAttrs;
+                                    setAnchorCircles(anchorcircles);      
+                                    setStartPoint([newAttrs.x , newAttrs.y])                                                    
+                                }}
+                        />  : <></>}
+                           {anchorCircles[1] ?  
+                        <Circular 
+                            shapeProps = {anchorCircles[1]}
+                            key = {1}
+                            isSelected= {1 === selectedcircleId}
+                            onSelect={() => {
+                                props.ChangeMode(null)   
+                                setSelectedcircleId(1)   
+                                selectShape(null)      
+                                }}
+                                onChange={(newAttrs) => {
+                                const anchorcircles = anchorCircles.slice();
+                                anchorcircles[1] = newAttrs;
+                                setAnchorCircles(anchorcircles);             
+                                setCurvePoint([newAttrs.x , newAttrs.y])                                                                        
+                                }}
+                        />   : <></>}
+
+                        {anchorCircles[2] ?  
+                        <Circular 
+                            shapeProps = {anchorCircles[2]}
+                            key = {2}
+                            isSelected= {2 === selectedcircleId}
+                            onSelect={() => {
+                                props.ChangeMode(null)   
+                                setSelectedcircleId(2)   
+                                selectShape(null)      
+                                }}
+                                onChange={(newAttrs) => {
+                                const anchorcircles = anchorCircles.slice();
+                                anchorcircles[2] = newAttrs;
+                                setAnchorCircles(anchorcircles);   
+                                setEndPoint([newAttrs.x , newAttrs.y])                                                                            
+                                }}
+                        />   : <></>}
+
+                        <Shape
+                        sceneFunc={(context, shape) => {
+                        context.beginPath();
+                        context.moveTo(startPoint[0] , startPoint[1]);
+                        context.quadraticCurveTo(curvePoint[0] , curvePoint[1],endPoint[0] , endPoint[1]);
+                        // (!) Konva specific method, it is very important
+                        context.fillStrokeShape(shape);
+                        }}
+                        stroke="black"
+                        strokeWidth={4}
+                        />
+
+                        <Line
+                                dash= {[10, 10, 0, 10]}
+                                strokeWidth= {3}
+                                stroke='black'
+                                lineCap='round'
+                                id='quadLinePath'
+                                opacity= {0.3}
+                                points= {[startPoint[0] , startPoint[1]  , curvePoint[0] , curvePoint[1], endPoint[0] , endPoint[1]]}
+                        
+                        />
                       </Layer>  
                         
             </Stage>   
