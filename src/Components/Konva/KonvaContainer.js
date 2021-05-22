@@ -539,6 +539,15 @@ const KonvaContainer = (props) => {
                                          id='quadLinePath'
                                          opacity= {0.3}
                                          points= {poly.points[index] && poly.points[index+1] ? [poly.points[index][0] , poly.points[index][1],point[0] , point[1],poly.points[index+1][0] ,poly.points[index+1][1]] : [poly.points[index][0] , poly.points[index][1],point[0] , point[1],poly.points[0][0] ,poly.points[0][1]]}/>
+                                         <Line
+                                            dash= {[10, 10, 0, 10]}
+                                            strokeWidth= {3}
+                                            stroke='grey'
+                                            lineCap='round'
+                                            id='quadLinePath'
+                                            opacity= {0.3}
+                                            points = {poly.points[index] && poly.points[index+1] ? [poly.points[index][0] , poly.points[index][1],poly.points[index+1][0] ,poly.points[index+1][1]] : [poly.points[index][0] , poly.points[index][1],poly.points[0][0] ,poly.points[0][1]]}
+                                         />
                                      </>
                                  
                                     )    
