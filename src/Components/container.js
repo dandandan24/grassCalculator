@@ -11,6 +11,7 @@ import calc from '@material-ui/icons/'
 import CalcWindow from './CalcWindow/CalcWindow';
 import KonvaContainer from './Konva/KonvaContainer'
 import DrawToolBar from './Konva/DrawToolBar'
+import ShapePoints from '../Algorithm/DotsSpreading';
 
 const Container = () => {
 
@@ -21,7 +22,8 @@ const Container = () => {
     }
 
     const handleOpen = () => {
-        setopenCalc(true)
+        ShapePoints([[1,1] , [2,5] , [4,7] , [8,3]])
+        setopenCalc(true)  
     }
 
     return(
