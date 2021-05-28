@@ -10,7 +10,6 @@ import RollsTable from './RollsTable'
 import { makeStyles , withStyles} from '@material-ui/core/styles';
 import explain from './explain.PNG'
 
-
 const useStyles = makeStyles((theme) => ({
     root: {
         [theme.breakpoints.down('sm')]: {

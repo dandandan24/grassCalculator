@@ -12,6 +12,7 @@ import CalcWindow from './CalcWindow/CalcWindow';
 import KonvaContainer from './Konva/KonvaContainer'
 import DrawToolBar from './Konva/DrawToolBar'
 import ShapePoints from '../Algorithm/DotsSpreading';
+import tryLongestPath from '../Algorithm/Algorithm'
 
 const Container = () => {
 
@@ -22,7 +23,8 @@ const Container = () => {
     }
 
     const handleOpen = () => {
-        ShapePoints([[1,1] , [2,5] , [4,7] , [8,3]])
+        let PointsOfLongestShape = tryLongestPath([[1,1] , [2,4] , [4,3] , [4,1]])
+        console.log(PointsOfLongestShape)
         setopenCalc(true)  
     }
 
