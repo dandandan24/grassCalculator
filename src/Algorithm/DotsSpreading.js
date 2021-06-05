@@ -72,6 +72,7 @@ const ShapePoints = (Points) => {
     }
     let Constants = LineEquation(Points[Points.length - 1][0] ,Points[Points.length - 1][1] ,Points[0][0] ,Points[0][1]);
     let linePoints = PointsGenerator(Points[Points.length - 1][0] , Points[0][0] , Constants[0], Constants[1])
+    console.log(linePoints, 'adsad')
     ShapePoints = [...ShapePoints , ...linePoints]
     console.log(ShapePoints)
     return ShapePoints

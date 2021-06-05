@@ -44,14 +44,39 @@ const CheckIfLineInShape = (x,y,x1,y1,BasePoints) => {
     let constants = LineEquation(x,y,x1,y1);
     let startX = Math.min(x,x1)
     let endX = Math.max(x,x1)
-    for(let currentX = startX+1 ; currentX < endX ; currentX++){
-        let currentY = constants[0]*currentX + constants[1]
-        if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){
-            console.log(currentX,currentY ,'Outside shape')
-            return false
+    if(Math.abs(x-x1) > Math.abs(y-y1)){
+        for(let currentX = startX+1 ; currentX < endX ; currentX++){
+            let currentY = constants[0]*currentX + constants[1]
+            if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){
+                //console.log(currentX,currentY , x,y,x1,y1 ,'Outside shape')
+                return false
+            }
+            else{
+                //console.log(currentX,currentY , x,y,x1,y1 ,'inside shape')
+            }
         }
     }
-    console.log(x,y,x1,y1 ,'inside')
+    else{
+        let startY = Math.min(y,y1)
+        let endY = Math.max(y,y1)
+        let CurrentX = 0
+        for(let CurrentY = startY+1 ; startY < endY ; CurrentY++){
+            if(x === x1){
+                CurrentX = x
+            }
+            else{
+                CurrentX = (CurrentY - constants[1])/constants[0]
+            }        
+            if(CheckIfPointInPolygon(CurrentX , CurrentY , BasePoints) === false){
+                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'Outside shape')
+                return false
+            }
+            else{
+                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'inside shape')
+            }
+        }
+    }
+    //console.log(x,y,x1,y1 ,'inside')
     return true
 }
 
@@ -76,7 +101,7 @@ const FilterNotPossibleDots = (index , Points) => {
             leftAdjacent = CopyPoints[index+1]      
     }
     }     
-    let rightConstants = LineEquation(CopyPoints[index][0] , CopyPoints[index][1], rightAdjacent[0] , rightAdjacent[1])
+    let rightConstants = LineEquation(CopyPoints[index][0] , CopyPoints[index][1], rightAdjacent[0] , rightAdjacent[1]) 
     let leftConstants = LineEquation(CopyPoints[index][0] , CopyPoints[index][1], leftAdjacent[0] , leftAdjacent[1])
     for(let currentPoint = 0 ; currentPoint <  Points.length ; currentPoint++){ 
         if(Points[index][0] === rightAdjacent[0]){
@@ -85,7 +110,7 @@ const FilterNotPossibleDots = (index , Points) => {
             }
         }    
         else{
-            if(Points[currentPoint][1] === rightConstants[0] *Points[currentPoint][0] + rightConstants[1]){
+            if(Points[currentPoint][1] - ((rightConstants[0] *Points[currentPoint][0]) + rightConstants[1]) < 0.05 && Points[currentPoint][1] - ((rightConstants[0] *Points[currentPoint][0]) + rightConstants[1]) > -0.05){
                 PointsToSplice.push(currentPoint)
             }      
         }
@@ -95,7 +120,7 @@ const FilterNotPossibleDots = (index , Points) => {
             }
         }  
         else{  
-            if(Points[currentPoint][1] === leftConstants[0] *Points[currentPoint][0] + leftConstants[1]){
+            if(Points[currentPoint][1] - ((leftConstants[0] *Points[currentPoint][0]) + leftConstants[1]) < 0.05 && Points[currentPoint][1] - ((leftConstants[0] *Points[currentPoint][0]) + leftConstants[1]) > -0.05){
                 PointsToSplice.push(currentPoint)
             }
         }

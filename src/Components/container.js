@@ -23,7 +23,7 @@ const Container = () => {
     }
 
     const handleOpen = () => {
-        let PointsOfLongestShape = tryLongestPath([[1,1] , [2,4] , [4,3] , [4,1]])
+        let PointsOfLongestShape = tryLongestPath([[4,6],[4,12],[7,12],[7,16],[27,16],[27,1],[20,1],[20,6]])
         console.log(PointsOfLongestShape)
         setopenCalc(true)  
     }
