@@ -47,12 +47,10 @@ const CheckIfLineInShape = (x,y,x1,y1,BasePoints) => {
     if(Math.abs(x-x1) > Math.abs(y-y1)){
         for(let currentX = startX+1 ; currentX < endX ; currentX++){
             let currentY = constants[0]*currentX + constants[1]
-            if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){
-                //console.log(currentX,currentY , x,y,x1,y1 ,'Outside shape')
+            if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){              
                 return false
             }
-            else{
-                //console.log(currentX,currentY , x,y,x1,y1 ,'inside shape')
+            else{            
             }
         }
     }
@@ -68,15 +66,12 @@ const CheckIfLineInShape = (x,y,x1,y1,BasePoints) => {
                 CurrentX = (CurrentY - constants[1])/constants[0]
             }        
             if(CheckIfPointInPolygon(CurrentX , CurrentY , BasePoints) === false){
-                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'Outside shape')
                 return false
             }
             else{
-                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'inside shape')
             }
         }
     }
-    //console.log(x,y,x1,y1 ,'inside')
     return true
 }
 
@@ -135,7 +130,6 @@ const FilterNotPossibleDots = (index , Points) => {
 
 const LineLength = (x,y,x1,y1) => {
     //return the line length
-    console.log(Math.sqrt(Math.pow((x-x1),2) + Math.pow((y-y1),2)))
     return(Math.sqrt(Math.pow((x-x1),2) + Math.pow((y-y1),2)))
 }
 

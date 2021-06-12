@@ -57,12 +57,10 @@ const CheckIfLineInShape = (x,y,x1,y1,BasePoints) => {
     if(Math.abs(x-x1) > Math.abs(y-y1)){
         for(let currentX = startX+1 ; currentX < endX ; currentX++){
             let currentY = constants[0]*currentX + constants[1]
-            if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){
-                //console.log(currentX,currentY , x,y,x1,y1 ,'Outside shape')
+            if(CheckIfPointInPolygon(currentX , currentY , BasePoints) === false){              
                 return false
             }
-            else{
-                //console.log(currentX,currentY , x,y,x1,y1 ,'inside shape')
+            else{               
             }
         }
     }
@@ -78,15 +76,12 @@ const CheckIfLineInShape = (x,y,x1,y1,BasePoints) => {
                 CurrentX = (CurrentY - constants[1])/constants[0]
             }        
             if(CheckIfPointInPolygon(CurrentX , CurrentY , BasePoints) === false){
-                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'Outside shape')
                 return false
             }
             else{
-                //console.log(CurrentX,CurrentY , x,y,x1,y1 ,'inside shape')
             }
         }
     }
-    //console.log(x,y,x1,y1 ,'inside')
     return true
 }
 
@@ -148,10 +143,8 @@ const LineLength = (x,y,constants , LinePoints) => {
         return Math.abs(x - LinePoints[0])
     }
     if(constants[0] === -0 || constants[0] === 0){
-      //  console.log(Math.abs(y-constants[1]))
         return Math.abs(y-LinePoints[1])
     }
-    console.log((Math.abs((-1 * constants[0]) + y - constants[1]))/(Math.sqrt(Math.pow(constants[0] + 1))))
     return (Math.abs((-1 * constants[0]) + y - constants[1]))/(Math.sqrt(Math.pow(constants[0] + 1)))
 }
 
@@ -201,7 +194,6 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
     for(let line = 0 ; line < PolygonStraightEquations.length ; line++){
         //if the slope of the line is infinity than it means its from x= ? type than its plumb will be y = ? 
         if(PolygonStraightEquations[line][0][0] !== Infinity){
-           // console.log(Point , PolygonStraightEquations[line] , 'firstcondition')   
             if(PolygonStraightEquations[line][0][0] !== -0 || PolygonStraightEquations[line][0][0] !== 0){
                  plumbConstants = [PolygonStraightEquations[line][0][0] * -1, (Point[1] - PolygonStraightEquations[line][0][1])/Point[0]]
             }
@@ -209,7 +201,6 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
             else{
                  plumbConstants = [Infinity , NaN]
             }
-           // console.log(plumbConstants , 'plumbConstants') 
             // if the line is x= ? then the x of cross point is constant and the y is one of the y's on the plumb line
             if(plumbConstants[0] === Infinity){
                 crossPoint = [Point[0] , PolygonStraightEquations[line][1][1]]
@@ -218,24 +209,20 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
             else{
                 crossPoint = getCrossPointBetweenTwoLines(plumbConstants ,PolygonStraightEquations[line][0])
             }
-           // console.log(crossPoint, PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3],'crossPoint')
             if(crossPoint[1] > Math.min(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3]) && crossPoint[1] < Math.max(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3])){
-                if(crossPoint[0] > Math.min(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2]) && crossPoint[0] < Math.max(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2])){
-                  //  console.log('pushed')
+                if(crossPoint[0] > Math.min(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2]) && crossPoint[0] < Math.max(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2])){                
                     filteredLines.push(PolygonStraightEquations[line])
                 }
             }
             if(plumbConstants[0] === Infinity){
-                if(crossPoint[0] > Math.min(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2]) && crossPoint[0] < Math.max(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2])){
-                  //  console.log('pushed')
+                if(crossPoint[0] > Math.min(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2]) && crossPoint[0] < Math.max(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2])){                 
                     filteredLines.push(PolygonStraightEquations[line])
                 }
             }
         }
         if(PolygonStraightEquations[line][0][0] === Infinity){
-          //  console.log('elsecondition' ,PolygonStraightEquations[line])
             if(Point[1] > Math.min(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3]) && Point[1] < Math.max(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3])){
-               // console.log('pushedd')
+           
                 filteredLines.push(PolygonStraightEquations[line])
             }
         }
@@ -249,22 +236,19 @@ const GetLongestStraightLine = (BasePoints) => {
     let maxLength = 0
     let Points = []
     let PolygonStraightEquations = getAllStraightEquations(BasePoints)
- //   console.log(PolygonStraightEquations)
+
     for(let point = 0 ; point < BasePoints.length ; point++)
     {
         let filteredStraightEquations = filterStraightLines(BasePoints[point] ,PolygonStraightEquations)
-    //   console.log(BasePoints[point] ,filteredStraightEquations , 'filteredStraightEquations')
         //if(CheckIfLineInShape(ShapePoints[point][0],ShapePoints[point][1],filteredPoints[match][0],filteredPoints[match][1] , ShapePoints)){
         for(let line = 0 ; line < filteredStraightEquations.length; line++){
-          //  console.log(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line] , 'sending to line length')
+         
             if(LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] , filteredStraightEquations[line][1] ) > maxLength){
                 maxLength = LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] ,  filteredStraightEquations[line][1]) 
-               // console.log(maxLength , 'max')
                 let constants = []
                 constants.push(filteredStraightEquations[line][0][0] * -1)
                 let n = BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))
                 constants.push(n)
-               // console.log(filteredStraightEquations[line][0] ,constants , 'constants',BasePoints[point] , filteredStraightEquations[line], 'crosspoint', getCrossPointBetweenTwoLines(constants , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1] ), 'crossresult'  )
                 Points = [BasePoints[point][0] , BasePoints[point][1], getCrossPointBetweenTwoLines(constants , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1] ) , indexOfPoint([filteredStraightEquations[line][1][0], filteredStraightEquations[line][1][1]] ,BasePoints )+1]
             }            
         }

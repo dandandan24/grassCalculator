@@ -64,8 +64,7 @@ const removeUselessPoints=  (PolygonPoints) => {
                 beforePointEquation = LineEquation(PolygonPoints[point-1][0] ,PolygonPoints[point-1][1] , PolygonPoints[point][0] , PolygonPoints[point][1])
                 afterPointEquation = LineEquation(PolygonPoints[point][0] ,PolygonPoints[point][1] , PolygonPoints[point+1][0] , PolygonPoints[point+1][1])
             }
-        }
-        console.log(beforePointEquation , afterPointEquation , "before and after equations")
+        }     
         if(beforePointEquation[0] === afterPointEquation[0]){
             PointsToSplice.push(point)
         }
@@ -75,7 +74,6 @@ const removeUselessPoints=  (PolygonPoints) => {
     for(let i = 0 ; i < PointsToSplice.length ; i++){
         CopyPoints.splice(PointsToSplice[i] - i , 1)
     }
-    console.log(CopyPoints ,'pointsleft')
     return CopyPoints
 
 }
@@ -83,7 +81,6 @@ const removeUselessPoints=  (PolygonPoints) => {
 
 // const ShapeSplitter = (StartPoint, EndPoint , OriginShapePoints) => {
 //     // this function get a big shape and coordinates of line crossing it and return the splitted shapes
-//     console.log(StartPoint, EndPoint , OriginShapePoints , 'cord')
 //     let StartIndex = indexOfPoint(StartPoint , OriginShapePoints)
 //     let EndIndex = indexOfPoint(EndPoint ,OriginShapePoints)
 //     let FirstShape = []
@@ -93,7 +90,6 @@ const removeUselessPoints=  (PolygonPoints) => {
 //         FirstShape = [...FirstShape , OriginShapePoints[point]]
 //     }
 //     FirstShape = [...FirstShape , ...PointsGenerator(OriginShapePoints[EndIndex][0] , OriginShapePoints[StartIndex][0] , LineConstants[0] , LineConstants[1])]
-//     console.log(FirstShape , 'firstShape')
 //     for(let point = EndIndex+1 ; point < OriginShapePoints.length ; point++){
 //         SecondShape = [...SecondShape , OriginShapePoints[point]]
 //     }
@@ -101,31 +97,26 @@ const removeUselessPoints=  (PolygonPoints) => {
 //         SecondShape = [...SecondShape , OriginShapePoints[point]]
 //     }
 //     SecondShape = [...SecondShape , ...PointsGenerator(OriginShapePoints[StartIndex][0] , OriginShapePoints[EndIndex][0] , LineConstants[0] , LineConstants[1])]
-//     console.log(SecondShape , 'secondShape')
 //     return [FirstShape , SecondShape]
 // }
 
 const ShapeSplitter = (StartPoint, EndPoint , OriginShapePoints) => {
     // this function get a big shape and coordinates of line crossing it and return the splitted shapes
-    console.log(StartPoint, EndPoint , OriginShapePoints , 'cord')
     let StartIndex = indexOfPoint(StartPoint , OriginShapePoints)
     let EndIndex = indexOfPoint(EndPoint ,OriginShapePoints)
     let FirstShape = []
     let SecondShape = []
-    console.log(OriginShapePoints , StartIndex , EndIndex)
     let LineConstants = LineEquation(OriginShapePoints[EndIndex][0] , OriginShapePoints[EndIndex][1] , OriginShapePoints[StartIndex][0] , OriginShapePoints[StartIndex][1])
     for(let point = StartIndex ; point <= EndIndex ; point++){
         FirstShape = [...FirstShape , OriginShapePoints[point]]
     }
-    console.log(FirstShape , 'firstShape')
+   
     for(let point = EndIndex ; point < OriginShapePoints.length ; point++){
         SecondShape = [...SecondShape , OriginShapePoints[point]]
     }
     for(let point = 0; point <= StartIndex ; point++){
         SecondShape = [...SecondShape , OriginShapePoints[point]]
     }
-    console.log(SecondShape , 'secondShape')
-
     return [removeUselessPoints(FirstShape) ,removeUselessPoints(SecondShape)]
 }
 

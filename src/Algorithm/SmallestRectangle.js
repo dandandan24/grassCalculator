@@ -9,7 +9,30 @@ import area from "@turf/area";
 import distance from "@turf/distance";
 import * as turf from 'turf/turf'
 
-const smallestSurroundingRectangleByarea = (Points) => {
+const smallestSurroundingRectangleByarea= (Points) => {
+    const turfPoints = tranformToTurfPoints(Points)
+    const convexHull = turfPoints;
+    const centroidCoords = centroid(convexHull);
+    const allHullCoords = coordAll(convexHull);
+
+    let minArea = Number.MAX_SAFE_INTEGER;
+    let resultPolygon = null;
+    resultPolygon = envelope(tranformToTurfPoints(allHullCoords))
+    return resultPolygon;
+  }
+
+
+  const tranformToTurfPoints = (Points) => {
+    let turfPoints = []
+    for(let point = 0 ; point < Points.length ; point++){
+        turfPoints = [...turfPoints , turf.point([Points[point][0] , Points[point][1]])]
+    }
+    turfPoints = turf.featureCollection(turfPoints);
+    return turfPoints
+  }
+
+
+const smallestSurroundingRectangleByareawithCurve = (Points) => {
     const turfPoints = tranformToTurfPoints(Points)
     const convexHull = turfPoints;
     console.log(convexHull , 'convex')
@@ -42,14 +65,6 @@ const smallestSurroundingRectangleByarea = (Points) => {
   }
 
 
-  const tranformToTurfPoints = (Points) => {
-    let turfPoints = []
-    for(let point = 0 ; point < Points.length ; point++){
-        turfPoints = [...turfPoints , turf.point([Points[point][0] , Points[point][1]])]
-    }
-    turfPoints = turf.featureCollection(turfPoints);
-    console.log(turfPoints , 'turfPoints')
-    return turfPoints
-  }
+ 
 
   export default smallestSurroundingRectangleByarea

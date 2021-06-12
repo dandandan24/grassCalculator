@@ -61,10 +61,8 @@ const ShapePoints = (Points) => {
         // code for infinity slope 
         if(constants[0] === -999){
             LinePoints = InfinitySlopePointGenerator(Points[point][1] , Points[point+1][1] ,Points[point][1])
-            console.log(LinePoints, 'infinitySlope')
         }
         else{
-            console.log(constants , point , constants)
             LinePoints = PointsGenerator(Points[point][0] , Points[point+1][0] , constants[0], constants[1])
         }
        
@@ -72,9 +70,7 @@ const ShapePoints = (Points) => {
     }
     let Constants = LineEquation(Points[Points.length - 1][0] ,Points[Points.length - 1][1] ,Points[0][0] ,Points[0][1]);
     let linePoints = PointsGenerator(Points[Points.length - 1][0] , Points[0][0] , Constants[0], Constants[1])
-    console.log(linePoints, 'adsad')
     ShapePoints = [...ShapePoints , ...linePoints]
-    console.log(ShapePoints)
     return ShapePoints
 }
 
