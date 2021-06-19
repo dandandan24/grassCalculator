@@ -1,4 +1,20 @@
+import { Minimize } from "@material-ui/icons"
 
+
+const MinimizeStrips = (CounterArray) => {
+    let minimizedArray = [0,0,0]
+    let twos =  CounterArray[0]
+    let threes =  CounterArray[1]   
+    twos = CounterArray[0]%2
+    threes = CounterArray[1]%4
+    let fours = (CounterArray[0]-twos)/2
+    fours += (CounterArray[1]-threes)/4  
+    fours += CounterArray[2]
+    minimizedArray[0] = twos
+    minimizedArray[1] = threes
+    minimizedArray[2] = fours
+    return minimizedArray
+}
 
 const RectangleSplitter = (width ,  height) => {
     let counterArray = [0,0,0]
@@ -30,6 +46,7 @@ const RectangleSplitter = (width ,  height) => {
         }
         counterArray = [0,0,0]
     }
+    FinalCounterArray = MinimizeStrips(FinalCounterArray)
     return [FinalCounterArray ,FinalMinimumWaste ]
 }
 

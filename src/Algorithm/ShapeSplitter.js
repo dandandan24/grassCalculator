@@ -102,6 +102,7 @@ const removeUselessPoints=  (PolygonPoints) => {
 
 const ShapeSplitter = (StartPoint, EndPoint , OriginShapePoints) => {
     // this function get a big shape and coordinates of line crossing it and return the splitted shapes
+    console.log(StartPoint, EndPoint , OriginShapePoints , 'shapeSplitterCords')
     let StartIndex = indexOfPoint(StartPoint , OriginShapePoints)
     let EndIndex = indexOfPoint(EndPoint ,OriginShapePoints)
     let FirstShape = []

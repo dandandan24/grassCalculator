@@ -12,7 +12,7 @@ import CalcWindow from './CalcWindow/CalcWindow';
 import KonvaContainer from './Konva/KonvaContainer'
 import DrawToolBar from './Konva/DrawToolBar'
 import ShapePoints from '../Algorithm/DotsSpreading';
-import tryLongestPath from '../Algorithm/Algorithm'
+import algorithm from '../Algorithm/Algorithm'
 
 const Container = () => {
 
@@ -23,7 +23,11 @@ const Container = () => {
     }
 
     const handleOpen = () => {
-        let PointsOfLongestShape = tryLongestPath([[4,6],[4,12],[7,12],[7,16],[27,16],[27,1],[20,1],[20,6]])
+        // tryLongestPath([[4,6],[4,12],[7,12],[7,16],[27,16],[27,1],[20,6]])
+        // tryLongestPath([[3,3],[3,11],[20,11],[20,3],[11,3],[11,6],[14,6],[14,9],[7,9],[7,3]])
+        //tryLongestPath([[4,4],[4,10],[12,10],[12,12.1],[18.4,12.1],[18.4,4],])
+        //algorithm([ [[4,4],[4,24] ,[15.5,24],[15.5,4]] ])
+        let PointsOfLongestShape = algorithm([ [[3,3],[3,11],[20,11],[20,3],[11,3],[11,6],[14,6],[14,9],[7,9],[7,3]] ])
         console.log(PointsOfLongestShape)
         setopenCalc(true)  
     }
