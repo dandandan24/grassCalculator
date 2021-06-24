@@ -17,7 +17,7 @@ const CheckIfPointInPolygon = (x,y , BasePoints) => {
     let counter = 0
     for (let i=1;i<=BasePoints.length;i++) {
         point2 = BasePoints[i % BasePoints.length];
-        if (y > Math.min(point[1],point2[1])) {
+        if (y >= Math.min(point[1],point2[1])) {
           if (y <= Math.max(point[1],point2[1])) {
             if (x <= Math.max(point[0],point2[0])) {
               if (point[1] != point2[1]) {

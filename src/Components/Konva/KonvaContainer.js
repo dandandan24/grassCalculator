@@ -35,7 +35,7 @@ const KonvaContainer = (props) => {
     const [curvePoint , setCurvePoint] = useState([45,90])
     const [anchorCircles , setAnchorCircles] = useState([{x : startPoint[0] , y : startPoint[1] , radius : 5 , id  : 1 , stroke : 'black' , fill : 'grey'},{x : curvePoint[0] , y : curvePoint[1] , radius : 5 , id:3, stroke : 'black' , fill : 'grey'},{x : endPoint[0] , y : endPoint[1] , radius : 5 , id : 2, stroke : 'black' , fill : 'grey'}])
     const [DraggedAnchor ,setDraggedAnchor] = useState(0)
-
+    const proportion = 20
 
     useEffect(() => {
         setOuterdiv(document.getElementById('parent'))
@@ -110,6 +110,8 @@ const KonvaContainer = (props) => {
                         }
                     })
                     setPolygons([...Polygons , {flattenedPoints : [...flattenedPoints] , points : [...points],anchorPoints : [...anchorpoints] ,closed : true }])
+                    //updating in the store for future usage
+                    props.UpdatePolygons([...Polygons , {flattenedPoints : [...flattenedPoints] , points : [...points],anchorPoints : [...anchorpoints] ,closed : true }])
                     setpoints([])
                     setcurMousePos([0,0])
                     setisFinished(false)
@@ -201,6 +203,10 @@ const KonvaContainer = (props) => {
                 ...Rects,
                 {...currentRect ,x: x>x0 ? x0 : x, y : y>y0 ? y0 : y, width : x>x0 ? x - x0 : x0-x,height : y>y0 ? y - y0 : y0-y , id : 'Rect'+Rects.length.toString() , stroke  : 'black',xDirection : x>x0 ? 'right' : 'left' ,yDirection : y>y0 ? 'up' : 'down'  , strokeWidth : 2}                    
             ])
+            props.UpdateRectangles([
+                ...Rects,
+                {...currentRect ,x: x>x0 ? x0 : x, y : y>y0 ? y0 : y, width : x>x0 ? x - x0 : x0-x,height : y>y0 ? y - y0 : y0-y , id : 'Rect'+Rects.length.toString() , stroke  : 'black',xDirection : x>x0 ? 'right' : 'left' ,yDirection : y>y0 ? 'up' : 'down'  , strokeWidth : 2}                    
+            ])
             }
             setCurrentRect(null)
         
@@ -213,6 +219,10 @@ const KonvaContainer = (props) => {
             } 
             else{ 
             setCircles([
+                ...circles,
+                {...currentCircle ,radius :PitagorasSentence(x,y,x0,y0)*2,width : PitagorasSentence(x,y,x0,y0)*2,height : PitagorasSentence(x,y,x0,y0)*2, id : 'Circle'+circles.length.toString() , stroke  : 'black',strokeWidth : 2}                    
+            ])
+            props.UpdateCircles([
                 ...circles,
                 {...currentCircle ,radius :PitagorasSentence(x,y,x0,y0)*2,width : PitagorasSentence(x,y,x0,y0)*2,height : PitagorasSentence(x,y,x0,y0)*2, id : 'Circle'+circles.length.toString() , stroke  : 'black',strokeWidth : 2}                    
             ])
@@ -231,6 +241,7 @@ const KonvaContainer = (props) => {
             props.ChangeStage(ref)
         }
     }; 
+
     const handleMouseOverStartPoint = event => {
         if (isFinished || points.length < 3) return;
         event.target.scale({ x: 2, y: 2 });
@@ -300,6 +311,7 @@ const KonvaContainer = (props) => {
             CopyPolygons[DraggedPolygon]['points'] = dots
             CopyPolygons[DraggedPolygon]['anchorPoints'] = anchorDots
             setPolygons(CopyPolygons)
+            props.UpdatePolygons(CopyPolygons)
         }
         else{
             const pos = [event.target.attrs.x, event.target.attrs.y , true];
@@ -308,6 +320,7 @@ const KonvaContainer = (props) => {
             let CopyPolygons = [...Polygons]
             CopyPolygons[DraggedPolygon]['anchorPoints'] = anchorDots
             setPolygons(CopyPolygons)
+            props.UpdatePolygons(CopyPolygons)
         }
         
       };
@@ -354,6 +367,7 @@ const KonvaContainer = (props) => {
                             }) : <></>}
                         </Layer>
                         <Layer>
+                       
                             <Line                                                        
                                 id = {currentLine ? currentLine.id : 0}
                                 points = {currentLine ? [currentLine.x0 ,currentLine.y0 , currentLine.x , currentLine.y ] : []}                   
@@ -374,11 +388,11 @@ const KonvaContainer = (props) => {
                                     stroke= 'black'
                                 />
                                 {currentRect ?           
-                                <Text text = {Math.floor(Math.abs(currentRect.width/2))/100} x = {currentRect.xDirection = 'right' ? currentRect.x + (currentRect.width / 2) : (currentRect.x - (currentRect.width / 2))} y={currentRect.y} fontSize = {20} /> 
+                                <Text text = {Math.floor(Math.abs(currentRect.width/2))/proportion} x = {currentRect.xDirection = 'right' ? currentRect.x + (currentRect.width / 2) : (currentRect.x - (currentRect.width / 2))} y={currentRect.y} fontSize = {20} /> 
                                 :
                                 <></> }
                                 {currentRect ?           
-                                <Text text = {Math.floor(Math.abs(currentRect.height/2))/100} x = {currentRect.x} y={currentRect.xDirection = 'up' ? currentRect.y + (currentRect.height / 2) : (currentRect.y - (currentRect.height / 2))} fontSize = {20} /> 
+                                <Text text = {Math.floor(Math.abs(currentRect.height/2))/proportion} x = {currentRect.x} y={currentRect.xDirection = 'up' ? currentRect.y + (currentRect.height / 2) : (currentRect.y - (currentRect.height / 2))} fontSize = {20} /> 
                                 :
                                 <></> }
                                 {Rects.map((rect, index) => (
@@ -394,17 +408,18 @@ const KonvaContainer = (props) => {
                                       const rects = Rects.slice();
                                       rects[index] = newAttrs;
                                       setRects(rects);
+                                      props.UpdateRectangles(rects)
                                       console.log(rects)
                                     }}
                                     />
                                 ))}     
 
                                 {Rects.map((rect, index) => (                                          
-                                        <Text text = {Math.floor(Math.abs(rect.width/2))/100} x = {rect.xDirection = 'right' ? rect.x + (rect.width / 2) : (rect.x - (rect.width / 2))} y={rect.y} fontSize = {20} />
+                                        <Text text = {Math.floor(Math.abs(rect.width/2))/proportion} x = {rect.xDirection = 'right' ? rect.x + (rect.width / 2) : (rect.x - (rect.width / 2))} y={rect.y} fontSize = {20} />
                                     
                                 ))}  
                                 {Rects.map((rect, index) => (                                                              
-                                        <Text text = {Math.floor(Math.abs(rect.height/2))/100} x = {rect.x} y={rect.xDirection = 'up' ? rect.y + (rect.height / 2) : (rect.y - (rect.height / 2))} fontSize = {20} />                     
+                                        <Text text = {Math.floor(Math.abs(rect.height/2))/proportion} x = {rect.x} y={rect.xDirection = 'up' ? rect.y + (rect.height / 2) : (rect.y - (rect.height / 2))} fontSize = {20} />                     
                                 ))}       
                        
                              
@@ -414,7 +429,7 @@ const KonvaContainer = (props) => {
                                  strokeWidth={2}
                                 stroke= 'black'/>
                                 {currentCircle ?
-                                <Text text= {Math.floor(currentCircle.radius)/100} x = {currentCircle.x} y = {currentCircle.y} fontSize = {currentCircle.radius < 20 ? 15 : 20}/>:
+                                <Text text= {Math.floor(currentCircle.radius)/proportion} x = {currentCircle.x} y = {currentCircle.y} fontSize = {currentCircle.radius < 20 ? 15 : 20}/>:
                                 <></>}
                                 
                                 {circles.map((circle , index) => {
@@ -431,7 +446,8 @@ const KonvaContainer = (props) => {
                                          onChange={(newAttrs) => {
                                             const Circles = circles.slice();
                                             Circles[index] = newAttrs;
-                                            setCircles(Circles);                                                                                     
+                                            setCircles(Circles);   
+                                            props.UpdateCircles(Circles)                                                                                  
                                          }}
                                        />)
                                        
@@ -440,7 +456,7 @@ const KonvaContainer = (props) => {
 
                                 {circles.map((circle , index) => {
                                     return(
-                                     <Text text= {Math.floor(circle.radius)/100/2} x = {circle.x} y = {circle.y} fontSize = {circle.radius < 20 ? 15 : 20}/>
+                                     <Text text= {Math.floor(circle.radius)/proportion/2} x = {circle.x} y = {circle.y} fontSize = {circle.radius < 20 ? 15 : 20}/>
                                     )
                                 })}
                                 
@@ -495,7 +511,7 @@ const KonvaContainer = (props) => {
                                 }                                 
                                 return (
                                     index % 2 === 0 ?
-                                    <Text text={Math.floor(PitagorasSentence(x,y,x1,y1)) / 100} x={x} y={y} fontSize={20} /> : 
+                                    <Text text={Math.floor(PitagorasSentence(x,y,x1,y1)) / proportion} x={x} y={y} fontSize={20} /> : 
                                     <></>
                                 );
                                 })}
@@ -596,7 +612,7 @@ const KonvaContainer = (props) => {
                                     }                                 
                                     return (
                                         index % 2 === 0?
-                                        <Text text={Math.floor(PitagorasSentence(x,y,x1,y1)) / 100} x={x} y={y} fontSize={20} /> : 
+                                        <Text text={Math.floor(PitagorasSentence(x,y,x1,y1)) / proportion} x={x} y={y} fontSize={20} /> : 
                                         <></>
                                     );
                                     })}
@@ -730,6 +746,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         ChangeMode: (newMode) => dispatch({type : 'ChangeMode' , newMode : newMode}),
         ChangeStage: (newStage) => dispatch({type : 'ChangeStage' , newStage : newStage}),
+        UpdateCircles : (newCircles) => dispatch({type : 'UpdateCircles' , newCircles : newCircles}),
+        UpdatePolygons : (newPolygons) => dispatch({type : 'UpdatePolygons' , newPolygons : newPolygons}),
+        UpdateRectangles : (newRectangles) => dispatch({type : 'UpdateRectangles' , newRectangles : newRectangles})
     }
 }
 

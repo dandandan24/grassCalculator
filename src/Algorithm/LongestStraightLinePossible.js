@@ -9,6 +9,61 @@ const LineEquation = (x , y , x1 ,y1) => {
     return [slope,constant]
 }
 
+const CheckSegmentsIntersect = (Startpoint,EndPoint , Line) => {
+    // check if two segments of line intersects
+   // console.log(Startpoint, EndPoint , Line , 'intersectdata')
+    let constants = LineEquation(Startpoint[0], Startpoint[1] , EndPoint[0] , EndPoint[1])
+    let CrossX, CrossY
+    if(Math.abs(constants[0]) === Infinity && Math.abs(Line[0][0]) === Infinity ){
+        if(Startpoint[0] !== Line[1][0]){
+            return false
+        }
+        else{
+            return true
+        }
+    }
+    if(constants[0] === Infinity || constants[0] === -Infinity){
+        CrossY = Line[1][1]
+        CrossX = Startpoint[0]
+    }
+    else{
+        if(Line[0][0] === Infinity || Line[0][0] === -Infinity){
+            CrossY =  Startpoint[1]
+            CrossX =  Line[1][0]
+        }
+        else{
+            CrossX = (constants[1] - Line[0][1]) / (Line[0][0] - constants[0])
+            CrossY = constants[0]*CrossX + constants[1]
+        }
+    }
+    if(CrossX <= Math.max(Startpoint[0] , EndPoint[0]) && CrossX >= Math.min(Startpoint[0] , EndPoint[0])){
+        if(CrossY <= Math.max(Startpoint[1] , EndPoint[1]) && CrossY >= Math.min(Startpoint[1] , EndPoint[1])){
+            return true
+        }
+    }
+    return false
+   
+}
+
+const CheckIfLineInPoly = (Startpoint,EndPoint ,AllLines , AllPoints) => {
+    // checks if certain line is inside a polygon or also going outside of it
+    let intersectionsCounter = 0
+    console.log(Startpoint,EndPoint ,AllLines, 'datayay')
+    for(let line = 0 ; line < AllLines.length ; line++){
+        if(CheckSegmentsIntersect(Startpoint, EndPoint , AllLines[line])){
+            console.log('intersection')
+            intersectionsCounter++
+        }
+    }
+    if(intersectionsCounter > 2){
+        return false
+    }
+    if(!CheckIfPointInPolygon((Startpoint[0]+EndPoint[0])/2 ,(Startpoint[1]+EndPoint[1])/2  , AllPoints)){
+        return false
+    }
+    console.log('in poly')
+    return true
+}
 
 const CheckIfPointInPolygon = (x,y , BasePoints) => {
     //check if a specific point is inside or outside a polygon
@@ -17,7 +72,7 @@ const CheckIfPointInPolygon = (x,y , BasePoints) => {
     let counter = 0
     for (let i=1;i<=BasePoints.length;i++) {
         point2 = BasePoints[i % BasePoints.length];
-        if (y > Math.min(point[1],point2[1])) {
+        if (y >  Math.min(point[1],point2[1])) {
           if (y <= Math.max(point[1],point2[1])) {
             if (x <= Math.max(point[0],point2[0])) {
               if (point[1] != point2[1]) {
@@ -193,6 +248,7 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
     let crossPoint = []
     for(let line = 0 ; line < PolygonStraightEquations.length ; line++){
         //if the slope of the line is infinity than it means its from x= ? type than its plumb will be y = ? 
+       
         if(PolygonStraightEquations[line][0][0] !== Infinity){
             if(PolygonStraightEquations[line][0][0] !== -0 || PolygonStraightEquations[line][0][0] !== 0){
                  plumbConstants = [PolygonStraightEquations[line][0][0] * -1, (Point[1] - PolygonStraightEquations[line][0][1])/Point[0]]
@@ -230,6 +286,8 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
     return filteredLines
 }
 
+
+
 const GetLongestStraightLine = (BasePoints) => {
     //this function get the ShapePoints from the DotsSpreading algorithm and return the longenst Line Possible in the Shape
     let filteredPoints = []
@@ -240,19 +298,19 @@ const GetLongestStraightLine = (BasePoints) => {
     for(let point = 0 ; point < BasePoints.length ; point++)
     {
         let filteredStraightEquations = filterStraightLines(BasePoints[point] ,PolygonStraightEquations)
-        //if(CheckIfLineInShape(ShapePoints[point][0],ShapePoints[point][1],filteredPoints[match][0],filteredPoints[match][1] , ShapePoints)){
         for(let line = 0 ; line < filteredStraightEquations.length; line++){
-         
-            if(LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] , filteredStraightEquations[line][1] ) > maxLength){
-                maxLength = LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] ,  filteredStraightEquations[line][1]) 
-                let constants = []
-                constants.push(filteredStraightEquations[line][0][0] * -1)
-                let n = BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))
-                constants.push(n)
-                Points = [BasePoints[point][0] , BasePoints[point][1], getCrossPointBetweenTwoLines(constants , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1] ) , indexOfPoint([filteredStraightEquations[line][1][0], filteredStraightEquations[line][1][1]] ,BasePoints )+1]
-            }            
+            if(CheckIfLineInPoly([BasePoints[point][0] ,BasePoints[point][1]] ,getCrossPointBetweenTwoLines([filteredStraightEquations[line][0][0] * -1 ,BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))] , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1]), PolygonStraightEquations , BasePoints)){
+                if(LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] , filteredStraightEquations[line][1] ) > maxLength){
+                    maxLength = LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] ,  filteredStraightEquations[line][1]) 
+                    let constants = []
+                    constants.push(filteredStraightEquations[line][0][0] * -1)
+                    let n = BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))
+                    constants.push(n)
+                    Points = [BasePoints[point][0] , BasePoints[point][1], getCrossPointBetweenTwoLines( constants , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1] ) , indexOfPoint([filteredStraightEquations[line][1][0], filteredStraightEquations[line][1][1]] ,BasePoints )+1]
+                }     
+            }         
         }
-           
+        
     }
     return Points
 }

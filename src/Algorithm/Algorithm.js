@@ -42,7 +42,7 @@ const checkBetterWasteDirection = (horizontalArray , verticalArray) => {
 }
 
 const checkBetterAttachmentsDirection = (horizontalArray , verticalArray) => {
-    console.log(horizontalArray , verticalArray , 'attacharrays')
+  
     let numOfStripesHorizontal = 0
     let numOfStripesVertical = 0
     for(let i = 0 ; i< horizontalArray.length ; i++){
@@ -126,7 +126,6 @@ const algorithmForOneShape = (Points , calcType , direction) => {
     let ShapesArray = [Points]
     let SplitedArray = []
     let LongestPath = 0
-    console.log(ShapesArray)
     while (ShapesArray.length > 0) {
         for(let Shape = 0 ; Shape < ShapesArray.length ; Shape++){
             // if the given shape is already 4 vertexes or less skip on the algorithm stages
@@ -136,10 +135,10 @@ const algorithmForOneShape = (Points , calcType , direction) => {
             else{
                 //gets the longest Path that is available between two vertexes
                 LongestPath = GetLongestStraightLine(ShapesArray[Shape])
-                console.log(LongestPath,'LongestPath')
+                console.log(LongestPath , 'longestpath ')
                 // insert the cross point of the longest line to the shape
                 ShapesArray[Shape] = insertPointAtIndex(LongestPath[2] ,  ShapesArray[Shape] , LongestPath[3])
-                console.log(ShapesArray[Shape],'ShapesArray')
+           
                 // split the shape into two shapes according to the longest line
                 let Shapes
                 if(indexOfPoint([LongestPath[0],LongestPath[1]] ,ShapesArray[Shape]) < indexOfPoint(LongestPath[2] ,ShapesArray[Shape])){
@@ -149,7 +148,7 @@ const algorithmForOneShape = (Points , calcType , direction) => {
                     Shapes = ShapeSplitter(LongestPath[2] ,[LongestPath[0],LongestPath[1]] , ShapesArray[Shape])
                 }
                 
-            console.log(Shapes,'SplittedShapes')
+      
                 //if one of the splitted shapes is below 4 point than push it to the rectengular shapes array else send it to another round
                 if(Shapes[0].length <= 4){
                     RectengularArray.push(Shapes[0])
@@ -178,8 +177,10 @@ const algorithmForOneShape = (Points , calcType , direction) => {
         //calculate from the rectangle points the height and width
         let Measures = RectangleMeasures(Rectangle['geometry']['coordinates'][0])
         //the first cell will be count array of grass rolls 
+
         let MinimumWasteWidth = RectangleSplitter(Measures[0] , Measures[1])
         let MinimumWasteHeight = RectangleSplitter(Measures[1] , Measures[0])
+       // console.log(Measures[0] , Measures[1] , MinimumWasteWidth , MinimumWasteHeight , 'minimums')
         //decides if calculating according height or width
         if(calcType === 'minimumWaste'){
             if(MinimumWasteWidth[1] * Measures[0] < MinimumWasteHeight[1] * Measures[1])
@@ -187,27 +188,27 @@ const algorithmForOneShape = (Points , calcType , direction) => {
                 // how long of each grass length
                 MinimumWasteWidth.push(Measures[0])
                 MinimumWasteArray.push(MinimumWasteWidth)
-                console.log(Measures[0] , Rectangle , MinimumWasteWidth , 'width')
+             
             }
             else{
                 if(MinimumWasteWidth[1] * Measures[0] === MinimumWasteHeight[1] * Measures[1]){
                     if(Measures[1] <= Measures[0]){
                         MinimumWasteWidth.push(Measures[0])
                         MinimumWasteArray.push(MinimumWasteWidth)
-                        console.log(Measures[0] , Rectangle , MinimumWasteWidth , 'width')
+                        
                     }
                     else
                     {
                         MinimumWasteHeight.push(Measures[1])
                         MinimumWasteArray.push(MinimumWasteHeight)
-                        console.log(Measures[0] , Rectangle , MinimumWasteHeight , 'height')                
+                                  
                     }
                 }
                 else{
                     // how long of each grass length
                     MinimumWasteHeight.push(Measures[1])
                     MinimumWasteArray.push(MinimumWasteHeight)
-                    console.log(Measures[0] , Rectangle , MinimumWasteHeight , 'height')
+                    
                 }
                 
             }
@@ -218,34 +219,36 @@ const algorithmForOneShape = (Points , calcType , direction) => {
             if(numOfStripsWidth <= numOfStripsHeight){
                 MinimumWasteWidth.push(Measures[0])
                 MinimumWasteArray.push(MinimumWasteWidth)
-                console.log(Measures[0] , Rectangle , MinimumWasteWidth , 'widthAttachments')
+               
             }
             else{
                 MinimumWasteHeight.push(Measures[1])
                 MinimumWasteArray.push(MinimumWasteHeight)
-                console.log(Measures[0] , Rectangle , MinimumWasteHeight , 'heightAttachments')     
+                
             }
         }
         if(calcType === 'sameDirection'){
-            console.log(direction)
+           
             if(direction === 'up'){
-                console.log('calculating updown')
+           
                 MinimumWasteWidth.push(Measures[0])
                 MinimumWasteArray.push(MinimumWasteWidth)
-                console.log(Measures[0] , Rectangle , MinimumWasteWidth , 'width')
+                
             }
             else{
-                console.log('calculating leftrifght')
+               
                 MinimumWasteHeight.push(Measures[1])
                 MinimumWasteArray.push(MinimumWasteHeight)
-                console.log(Measures[0] , Rectangle , MinimumWasteHeight , 'height')  
+                
             }
         }
         let initialPolygonArea = calcPolygonArea(RectengularArray[FinalShape])
         let RectangleArea = calcPolygonArea(Rectangle['geometry']['coordinates'][0])
+        let striperemain = MinimumWasteArray[FinalShape][1]
         MinimumWasteArray[FinalShape][1] = (RectangleArea - initialPolygonArea) + (MinimumWasteArray[FinalShape][1] * MinimumWasteArray[FinalShape][2] )
         MinimumWasteArray[FinalShape].push(Rectangle['geometry']['coordinates'][0])
         MinimumWasteArray[FinalShape].push(RectengularArray[FinalShape])
+        MinimumWasteArray[FinalShape].push(striperemain)
       
     }
     return MinimumWasteArray

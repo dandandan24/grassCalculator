@@ -13,8 +13,10 @@ import KonvaContainer from './Konva/KonvaContainer'
 import DrawToolBar from './Konva/DrawToolBar'
 import ShapePoints from '../Algorithm/DotsSpreading';
 import algorithm from '../Algorithm/Algorithm'
+import { connect , dispatch } from "react-redux"
+import ProportionController from '../Algorithm/ShapesProportions'
 
-const Container = () => {
+const Container = (props) => {
 
     const [openCalc , setopenCalc] = useState(false)
 
@@ -27,8 +29,11 @@ const Container = () => {
         // tryLongestPath([[3,3],[3,11],[20,11],[20,3],[11,3],[11,6],[14,6],[14,9],[7,9],[7,3]])
         //tryLongestPath([[4,4],[4,10],[12,10],[12,12.1],[18.4,12.1],[18.4,4],])
         //algorithm([ [[4,4],[4,24] ,[15.5,24],[15.5,4]] ])
-        let PointsOfLongestShape = algorithm([ [[3,3],[3,11],[20,11],[20,3],[11,3],[11,6],[14,6],[14,9],[7,9],[7,3]] ])
-        console.log(PointsOfLongestShape)
+        let orderedRects = ProportionController.RectangleHandler(props.Rectangles) 
+        let orderedPolygons = ProportionController.PolygonHandler(props.Polygons)
+        let algorithmResult = algorithm([...orderedRects, ...orderedPolygons])
+        console.log(algorithmResult)
+        props.ChagneResultArray(algorithmResult)
         setopenCalc(true)  
     }
 
@@ -73,5 +78,22 @@ const Container = () => {
     )
 }
 
+const mapStateToProps = (state) => {
+    return {
+        mode : state.konva.mode,
+        stage : state.konva.stage,
+        Polygons : state.konva.Polygons,
+        Rectangles : state.konva.Rectangles,
+        Circles : state.konva.Circles,
+    }
+}
 
-export default Container
+const mapDispatchToProps = (dispatch) => {
+    return {
+        ChagneResultArray: (newResult) => dispatch({type : 'ChagneResultArray' , newResult : newResult}),
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Container)
+

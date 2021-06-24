@@ -23,6 +23,21 @@ const RectangleSplitter = (width ,  height) => {
     let remain = 0
     let TempMinimumWidth = 0
     let FinalCounterArray = []
+    if(height < 2){
+        counterArray[0] = 1
+        FinalMinimumWaste = 2 -height
+        return[counterArray ,FinalMinimumWaste ]
+    }
+    if(height > 2 && height <= 3){
+        counterArray[1] = 1
+        FinalMinimumWaste = 3 -height
+        return[counterArray ,FinalMinimumWaste ]
+    }
+    if(height > 3 && height <= 4){
+        counterArray[2] = 1
+        FinalMinimumWaste = 4 -height
+        return[counterArray ,FinalMinimumWaste ]
+    }
     for(let GrassWidth = 2 ; GrassWidth <= 4 ; GrassWidth++){
         counterArray[GrassWidth - 2] = Math.floor(height / GrassWidth) - 1
         remain = GrassWidth + (height % GrassWidth)
@@ -41,6 +56,7 @@ const RectangleSplitter = (width ,  height) => {
             counterArray[TempMinimumWidth - 2] += 1
         }
         if(Math.abs((height - ((counterArray[0] * 2) +(counterArray[1] * 3) + (counterArray[2] * 4)))) < FinalMinimumWaste){
+            console.log(height,counterArray ,Math.abs((height - ((counterArray[0] * 2) +(counterArray[1] * 3) + (counterArray[2] * 4)))) , 'minimumwaste')
             FinalMinimumWaste = Math.abs((height - ((counterArray[0] * 2) +(counterArray[1] * 3) + (counterArray[2] * 4))))
             FinalCounterArray = [...counterArray]
         }
