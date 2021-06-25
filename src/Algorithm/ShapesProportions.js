@@ -18,11 +18,11 @@ const roundingUp = (Points) => {
 }
 
 
-const TransformintoProportion = (Points , proportion) => {
+const TransformintoProportion = (Points , proportion , height) => {
     //get an array of points and return the same array in the right proportion
     let TranformedPointsArray = []
     for(let point =0 ; point < Points.length ; point++){
-        let TransformedPoint = [Points[point][0]/proportion , Points[point][1]/proportion]
+        let TransformedPoint = [Points[point][0]/proportion , (height- Points[point][1])/proportion]
         TranformedPointsArray.push(TransformedPoint)
     }
     return TranformedPointsArray
@@ -34,33 +34,46 @@ const FindRectPoints = (x,y,height,width) => {
     return RectanglePoints
 }
 
-const RectangleHandler = (Rectangles) => {
+const RectangleHandler = (Rectangles , stageHeight) => {
     let OrderedRects = []
     for (let rect = 0 ;rect < Rectangles.length ; rect++){
         let RectPoints = FindRectPoints(Rectangles[rect].x ,Rectangles[rect].y , Rectangles[rect].height, Rectangles[rect].width)
-        RectPoints = TransformintoProportion(RectPoints , 40)
+        RectPoints = TransformintoProportion(RectPoints , 40 , stageHeight)
         OrderedRects.push(RectPoints)
     }
     return OrderedRects
 }
 
-const PolygonHandler = (Polygons) => {
+const PolygonHandler = (Polygons , stageHeight) => {
     let OrderedPolygons = []
     for(let polygon = 0 ; polygon < Polygons.length ; polygon++){
         let polygonPoints = Polygons[polygon]["points"]
         polygonPoints = roundingUp(polygonPoints)
-        polygonPoints = TransformintoProportion(polygonPoints , 40)
+        polygonPoints = TransformintoProportion(polygonPoints , 40 , stageHeight)
         OrderedPolygons.push(polygonPoints)
     }
     return OrderedPolygons
 }
 
+const CircleHandler = (Circles , stageHeight) => {
+    let OrderedCircles = []
+    for(let Circle = 0 ; Circle < Circles.length ; Circle++){
+        let x = Circles[Circle].x 
+        let y = Circles[Circle].y 
+        let radius = Circles[Circle].radius 
+        let CircleRectPoints = FindRectPoints(x-(radius/2) , y-(radius/2) , radius , radius)
+        CircleRectPoints = TransformintoProportion(CircleRectPoints , 40 , stageHeight)
+        OrderedCircles.push(CircleRectPoints)
+    }
+    return OrderedCircles
+}
 
 const ProportionController = {
     TransformintoProportion,
     FindRectPoints,
     RectangleHandler,
-    PolygonHandler
+    PolygonHandler,
+    CircleHandler
 }
 
 export default ProportionController

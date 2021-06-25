@@ -39,6 +39,7 @@ const KonvaContainer = (props) => {
 
     useEffect(() => {
         setOuterdiv(document.getElementById('parent'))
+        props.ChangeHeight(document.getElementById('parent').offsetHeight)
     }, [])  
 
     const checkDeselect = (e) => {
@@ -744,6 +745,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        ChangeHeight : (newHeight) => dispatch({type : 'ChangeHeight' , newHeight : newHeight}),
         ChangeMode: (newMode) => dispatch({type : 'ChangeMode' , newMode : newMode}),
         ChangeStage: (newStage) => dispatch({type : 'ChangeStage' , newStage : newStage}),
         UpdateCircles : (newCircles) => dispatch({type : 'UpdateCircles' , newCircles : newCircles}),

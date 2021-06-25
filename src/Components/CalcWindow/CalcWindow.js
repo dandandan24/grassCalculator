@@ -10,7 +10,7 @@ import RollsTable from './RollsTable'
 import { makeStyles , withStyles} from '@material-ui/core/styles';
 import explain from './explain.PNG'
 import { connect , dispatch } from "react-redux"
-import {Stage , Layer , Line , Rect , Text , Circle} from 'react-konva'
+import {Stage , Layer , Line , Rect , Text , Circle, Arrow} from 'react-konva'
 import Rectangle from '../Konva/Rectangle'
 import Polygon from '../Konva/Polygon'
 import Circular from '../Konva/Circle'
@@ -62,8 +62,44 @@ const CalcWindow = (props) => {
         }
     }; 
 
+    const orderPoints = (Points) => {
+        // order the polygon points to match
+        let orderedpoints = []
+        for(let point = 0 ;point < Points.length-2 ; point++){         
+                if(point%2 == 0){
+                    orderedpoints.push(Points[point]/2)
+                }
+                else{
+                    orderedpoints.push(Points[point])
+                }          
+        }
+        orderedpoints.push(Points[0]/2)
+        orderedpoints.push(Points[1])
+        return orderedpoints
+    }
+
+    const SumUpOrder = () => {
+        let Stripes = [0,0,0]
+        let remain = 0
+        for(let Arrayshapes = 0 ; Arrayshapes < props.AlgorithmResult[currentTab].length ; Arrayshapes++){
+            for(let shape = 0 ;shape < props.AlgorithmResult[currentTab][Arrayshapes].length ; shape++){
+                Stripes[0] += props.AlgorithmResult[currentTab][Arrayshapes][shape][0][0]
+                Stripes[1] += props.AlgorithmResult[currentTab][Arrayshapes][shape][0][1]
+                Stripes[2] += props.AlgorithmResult[currentTab][Arrayshapes][shape][0][2]
+                remain += props.AlgorithmResult[currentTab][Arrayshapes][shape][1]
+            }
+        }
+        console.log([Stripes,remain] , 'finall strupes')
+        return [Stripes,remain]
+    }
+
     const Squarelines = [0,1,2,3,4,5,6,7,8,9,10]
     const proportion = 40
+    let finalResults = [[0,0,0] , 0]
+    if(props.AlgorithmResult[currentTab]){
+         finalResults = SumUpOrder()
+    }
+    
     return(
         <Dialog fullWidth  = {true} maxWidth = 'xl'   onClose = {props.close} open = {props.open}>                
                 <Grid container spacing = {0} style = {{direction : 'rtl'}}>
@@ -77,8 +113,8 @@ const CalcWindow = (props) => {
                             <Paper className = {classes.root}>
                                 <Tabs value = {currentTab} indicatorColor = 'primary' textColor = 'primary' onChange = {handleTabChange}>
                                     <Tab label="מינימום פחת" /> 
-                                    <Tab label="מינימום פחת + כיוון סיב אחיד" />
                                     <Tab label="מינימום חיבורים" />
+                                    <Tab label="מינימום פחת + כיוון סיב אחיד"/>
                                     <Tab label="מינימום חיבורים + כיוון סיב אחיד" />
                                 </Tabs>
                             </Paper>
@@ -90,7 +126,7 @@ const CalcWindow = (props) => {
                         </Grid>
 
                         <Grid item xl = {9} xs = {9}  style = {{ marginRight : '20px'}}>
-                            <RollsTable row = {{TwoMeter : 3 , ThreeMeter: 5 , FourMeter : 10 , LeftOvers : 0.25}}></RollsTable>
+                            <RollsTable row = {{TwoMeter : finalResults[0][0] , ThreeMeter: finalResults[0][1] , FourMeter : finalResults[0][2] , LeftOvers : finalResults[1].toFixed(2)}}></RollsTable>
                         </Grid>
 
                         <Grid item xl = {12}  xs = {12} style = {{marginTop : '30px'}}>
@@ -130,7 +166,7 @@ const CalcWindow = (props) => {
                                    
                                     return(
                                         <Rectangle
-                                        shapeProps = {{...rect , x : rect.x/2 , width : rect.width /2 , height : rect.height ,stroke : 'white', fill : 'lightgreen'}}   
+                                        shapeProps = {{...rect , x : rect.x/2 , width : rect.width /2 , height : rect.height ,stroke : 'white', fill : '#AFD5AA'}}   
 
                                         key = {index}                                                
                                         />
@@ -140,7 +176,7 @@ const CalcWindow = (props) => {
                                     
                                     return(
                                        <Circular 
-                                       shapeProps = {{...circle , x: circle.x/2, radius : circle.radius/2 , width : circle.width/2 , height : circle.height/2}}
+                                       shapeProps = {{...circle , x: circle.x/2, radius : circle.radius/2 , width : circle.width/2 , height : circle.height/2 , fill : '#AFD5AA' , stroke : 'white'}}
                                        key = {index}                                     
                                        />)                         
                                 })}
@@ -166,31 +202,20 @@ const CalcWindow = (props) => {
                                             // (!) Konva specific method, it is very important
                                             context.fillStrokeShape(shape);                                          
                                             }}                                         
-                                            stroke="pink"    
-                                            strokeWidth={4}/>                                          
-                                            {/* <Line
-                                            dash= {[10, 10, 0, 10]}
-                                            strokeWidth= {3}
-                                            stroke='red'
-                                            lineCap='round'
-                                            id='quadLinePath'
-                                            opacity= {0.3}
-                                            points= {poly.points[index] && poly.points[index+1] ? [poly.points[index][0]/2 , poly.points[index][1],point[0]/2 , point[1],poly.points[index+1][0]/2 ,poly.points[index+1][1]] : [poly.points[index][0]/2 , poly.points[index][1],point[0]/2 , point[1],poly.points[0][0]/2 ,poly.points[0][1]]}/>
-                                            <Line
-                                                dash= {[10, 10, 0, 10]}
-                                                strokeWidth= {3}
-                                                stroke='grey'
-                                                lineCap='round'
-                                                id='quadLinePath'
-                                                opacity= {0.3}
-                                                points = {poly.points[index] && poly.points[index+1] ? [poly.points[index][0]/2 , poly.points[index][1],poly.points[index+1][0]/2 ,poly.points[index+1][1]] : [poly.points[index][0]/2 , poly.points[index][1],poly.points[0][0]/2 ,poly.points[0][1]]}
-                                            /> */}
+                                            //stroke="pink"    
+                                            strokeWidth={4}/>                                                                                   
                                         </>                                  
                                         )    
                                     })}                                                                    
                                     </>)
                             })}                                  
-
+                            {props.Polygons.map((poly , index) =>{  
+                                                        
+                                return(                                         
+                                         <Line closed = {true} points = {orderPoints(poly.flattenedPoints)} strokeWidth={4} fill = "#AFD5AA">
+                                        </Line>                                                                      
+                                   )                                                            
+                            })}          
                            
                                 
                        
@@ -203,21 +228,20 @@ const CalcWindow = (props) => {
                                             let coreWidth = Math.abs(rect[3][0][0] -  rect[3][1][0])
                                             let remainArea = rect[5]
                                             let length = rect[2]
-                                            let coreHeight =Math.abs(rect[3][0][1] -  rect[3][2][1])       
-                                        console.log(coreWidth,coreHeight , remainArea , length , 'coreremainlength')   
-                                        console.log(coreWidth + (length !== coreWidth?  remainArea: 0),coreHeight + (length !== coreHeight?  remainArea: 0),'widthg and heighr' )                                                
+                                            let coreHeight =Math.abs(rect[3][0][1] -  rect[3][2][1])                                                                                         
                                         return(
                                             <>
                                             <Rectangle
                                             shapeProps ={{x : rect[3][0][0]*proportion/2 , 
-                                                        y : rect[3][0][1]*proportion , 
+                                                        y : props.height-(rect[3][0][1]*proportion) , 
                                                         width : (coreWidth + (length !== coreWidth?  remainArea: 0))*proportion/2
-                                                 , height: (coreHeight + (length !== coreHeight?  remainArea: 0))*proportion , stroke : 'black',dash: [10, 10], strokeWidth : 3}}
+                                                 , height: (coreHeight + (length !== coreHeight?  remainArea: 0))*proportion , stroke : 'grey',dash: [10, 10], strokeWidth : 3}}
                                             
                                             key = {index}                                                
                                             />
-                                            <Text text = {parseFloat((coreWidth + (length !== coreWidth?  remainArea: 0))).toFixed(2)} x = {rect[3][0][0]*proportion/2 + (coreWidth + (length !== coreWidth?  remainArea: 0))*proportion/4} y= {rect[3][0][1]*proportion - 30}  fontSize = {20} />
-                                            <Text text = {parseFloat((coreHeight + (length !== coreHeight?  remainArea: 0))).toFixed(2)} x = {rect[3][0][0]*proportion/2 - 30} y= {rect[3][0][1]*proportion + (coreHeight + (length !== coreHeight?  remainArea: 0))*proportion/2}  fontSize = {20} />
+                                            <Text text = {parseFloat((coreWidth + (length !== coreWidth?  remainArea: 0))).toFixed(2)} x = {rect[3][0][0]*proportion/2 + (coreWidth + (length !== coreWidth?  remainArea: 0))*proportion/4} y= {props.height - (rect[3][0][1]*proportion) - 30}  fontSize = {20} />
+                                            <Text text = {parseFloat((coreHeight + (length !== coreHeight?  remainArea: 0))).toFixed(2)} x = {rect[3][0][0]*proportion/2 - 30} y= {props.height - (rect[3][0][1]*proportion) + (coreHeight + (length !== coreHeight?  remainArea: 0))*proportion/2}  fontSize = {20} />
+                                            <Arrow  points = {rect[6] === 'right' ? [rect[3][0][0]*proportion/2 + 5,props.height-(rect[3][0][1]*proportion) + 10,rect[3][0][0]*proportion/2 + 25 ,props.height-(rect[3][0][1]*proportion) + 10 ] : [rect[3][0][0]*proportion/2 + 10,props.height-(rect[3][0][1]*proportion) + 10,rect[3][0][0]*proportion/2 + 10 ,props.height-(rect[3][0][1]*proportion) + 30 ]} stroke = "black" strokeWidth = "black" fill = "black"/>
                                             </>
                                         )}))                                             
                                     }) : <></>}
@@ -235,6 +259,7 @@ const CalcWindow = (props) => {
 const mapStateToProps = (state) => {
     return {
         Polygons : state.konva.Polygons,
+        height : state.konva.height,
         Rectangles : state.konva.Rectangles,
         Circles : state.konva.Circles,
         mode : state.konva.mode,

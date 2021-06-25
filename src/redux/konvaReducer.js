@@ -3,6 +3,7 @@
 const initial_state = {
     mode : 'Line',
     stage : null,
+    height : 0,
     Polygons : [],
     Rectangles : [],
     Circles : [],
@@ -13,6 +14,11 @@ const initial_state = {
 
 const konvaReducer = (state = initial_state , action) => {
     switch (action.type){
+        case 'ChangeHeight':
+            return {
+                ...state,
+                height : action.newHeight
+            }   
         case 'ChangeMode' : 
             return {
                 ...state,

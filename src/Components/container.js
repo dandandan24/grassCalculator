@@ -29,9 +29,17 @@ const Container = (props) => {
         // tryLongestPath([[3,3],[3,11],[20,11],[20,3],[11,3],[11,6],[14,6],[14,9],[7,9],[7,3]])
         //tryLongestPath([[4,4],[4,10],[12,10],[12,12.1],[18.4,12.1],[18.4,4],])
         //algorithm([ [[4,4],[4,24] ,[15.5,24],[15.5,4]] ])
-        let orderedRects = ProportionController.RectangleHandler(props.Rectangles) 
-        let orderedPolygons = ProportionController.PolygonHandler(props.Polygons)
-        let algorithmResult = algorithm([...orderedRects, ...orderedPolygons])
+        let orderedRects = ProportionController.RectangleHandler(props.Rectangles , props.height) 
+        let orderedPolygons = ProportionController.PolygonHandler(props.Polygons , props.height)
+        let orderedCircles = ProportionController.CircleHandler(props.Circles , props.height)
+        let algorithmResult
+        try{
+            algorithmResult = algorithm([...orderedRects, ...orderedCircles, ...orderedPolygons])
+        }
+        catch(e){
+            alert('cant handle it yet')
+        }
+        //algorithmResult = reversePoints(algorithmResult)
         console.log(algorithmResult)
         props.ChagneResultArray(algorithmResult)
         setopenCalc(true)  
@@ -82,6 +90,7 @@ const mapStateToProps = (state) => {
     return {
         mode : state.konva.mode,
         stage : state.konva.stage,
+        height : state.konva.height,
         Polygons : state.konva.Polygons,
         Rectangles : state.konva.Rectangles,
         Circles : state.konva.Circles,

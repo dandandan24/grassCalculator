@@ -30,8 +30,10 @@ const checkBetterWasteDirection = (horizontalArray , verticalArray) => {
     let SumHorizontal = 0
     let SumVertical = 0
     for(let i = 0 ; i< horizontalArray.length ; i++){
-        SumHorizontal += horizontalArray[i][0][1]
-        SumVertical += verticalArray[i][0][1]
+        for(let j =0 ; j< horizontalArray[i].length ; j++){
+        SumHorizontal += horizontalArray[i][j][1]
+        SumVertical += verticalArray[i][j][1]
+        }
     }
     if(SumHorizontal <= SumVertical){
         return 'horizontal'
@@ -46,14 +48,21 @@ const checkBetterAttachmentsDirection = (horizontalArray , verticalArray) => {
     let numOfStripesHorizontal = 0
     let numOfStripesVertical = 0
     for(let i = 0 ; i< horizontalArray.length ; i++){
-        numOfStripesHorizontal += (horizontalArray[i][0][0][0] + horizontalArray[i][0][0][1] + horizontalArray[i][0][0][2])
-        numOfStripesVertical += (verticalArray[i][0][0][0] + verticalArray[i][0][0][1] + verticalArray[i][0][0][2])
+        for(let j =0 ; j< horizontalArray[i].length ; j++){
+        numOfStripesHorizontal += (horizontalArray[i][j][0][0] + horizontalArray[i][j][0][1] + horizontalArray[i][j][0][2])
+        numOfStripesVertical += (verticalArray[i][j][0][0] + verticalArray[i][j][0][1] + verticalArray[i][j][0][2])
+        }
     }
-    if(numOfStripesHorizontal <= numOfStripesVertical){
+    if(numOfStripesHorizontal < numOfStripesVertical){
         return 'horizontal'
     }
     else{
-        return 'vertical'
+        if(numOfStripesHorizontal > numOfStripesVertical){
+            return 'vertical'
+        }
+        else{
+            return checkBetterWasteDirection(horizontalArray , verticalArray)
+        }
     }
 }
 
@@ -110,6 +119,7 @@ const algorithm = (Shapes) => {
     else{
         ResultArray.push(MinimumWasteUpDown)
     }
+     //checking which is better leftRight or Updown in terms of attachments
     direction = checkBetterAttachmentsDirection(MinimumWasteRightLeft ,MinimumWasteUpDown)
     if(direction === 'horizontal'){
         ResultArray.push(MinimumWasteRightLeft)
@@ -216,14 +226,26 @@ const algorithmForOneShape = (Points , calcType , direction) => {
         if(calcType === 'minimumAttachments'){
             let numOfStripsWidth = MinimumWasteWidth[0][0] + MinimumWasteWidth[0][1] + MinimumWasteWidth[0][2]
             let numOfStripsHeight = MinimumWasteHeight[0][0] + MinimumWasteHeight[0][1] + MinimumWasteHeight[0][2]
-            if(numOfStripsWidth <= numOfStripsHeight){
+            if(numOfStripsWidth < numOfStripsHeight){
                 MinimumWasteWidth.push(Measures[0])
                 MinimumWasteArray.push(MinimumWasteWidth)
                
             }
             else{
-                MinimumWasteHeight.push(Measures[1])
-                MinimumWasteArray.push(MinimumWasteHeight)
+                if(numOfStripsWidth > numOfStripsHeight){
+                    MinimumWasteHeight.push(Measures[1])
+                    MinimumWasteArray.push(MinimumWasteHeight)
+                }
+                else{
+                    if(MinimumWasteWidth[1] > MinimumWasteHeight[1]){
+                        MinimumWasteHeight.push(Measures[1])
+                        MinimumWasteArray.push(MinimumWasteHeight)
+                    }
+                    else{
+                        MinimumWasteWidth.push(Measures[0])
+                        MinimumWasteArray.push(MinimumWasteWidth)
+                    }
+                }
                 
             }
         }
@@ -246,12 +268,25 @@ const algorithmForOneShape = (Points , calcType , direction) => {
         let RectangleArea = calcPolygonArea(Rectangle['geometry']['coordinates'][0])
         let striperemain = MinimumWasteArray[FinalShape][1]
         MinimumWasteArray[FinalShape][1] = (RectangleArea - initialPolygonArea) + (MinimumWasteArray[FinalShape][1] * MinimumWasteArray[FinalShape][2] )
-        MinimumWasteArray[FinalShape].push(Rectangle['geometry']['coordinates'][0])
+        MinimumWasteArray[FinalShape].push(reOrder(Rectangle['geometry']['coordinates'][0]))
         MinimumWasteArray[FinalShape].push(RectengularArray[FinalShape])
         MinimumWasteArray[FinalShape].push(striperemain)
+        MinimumWasteArray[FinalShape].push(MinimumWasteArray[FinalShape][2] === Measures[0] ? 'down' : 'right')
       
     }
     return MinimumWasteArray
+}
+
+
+const reOrder = (Rectangle) => {
+    //ordering the rectangle so the first point will be the upperleft
+    //the upperleft will always be with the smallest x and (because of the upsidedown of the stage) the biggest y
+    // we can just reverse the order 
+    let orderedRectangle = []
+    for(let vertex = Rectangle.length-2 ; vertex >= 0; vertex--){
+        orderedRectangle.push(Rectangle[vertex])
+    }
+    return orderedRectangle
 }
 
 export default algorithm

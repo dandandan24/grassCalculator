@@ -15,29 +15,61 @@ const CheckSegmentsIntersect = (Startpoint,EndPoint , Line) => {
     let constants = LineEquation(Startpoint[0], Startpoint[1] , EndPoint[0] , EndPoint[1])
     let CrossX, CrossY
     if(Math.abs(constants[0]) === Infinity && Math.abs(Line[0][0]) === Infinity ){
-        if(Startpoint[0] !== Line[1][0]){
+        if(Startpoint[0] === Line[1][0]){
             return false
         }
         else{
-            return true
+            return false
         }
     }
     if(constants[0] === Infinity || constants[0] === -Infinity){
         CrossY = Line[1][1]
         CrossX = Startpoint[0]
+        if(Math.abs(Line[0][0]) === 0){
+            if(Math.min(Line[1][0],Line[1][2]) < Startpoint[0] && Math.max(Line[1][0],Line[1][2]) > Startpoint[0] && (Line[1][1] < Math.max(Startpoint[1],EndPoint[1]) && Line[1][1] > Math.min(Startpoint[1],EndPoint[1]))){
+                return true
+            }
+            return false
+        }
     }
     else{
         if(Line[0][0] === Infinity || Line[0][0] === -Infinity){
             CrossY =  Startpoint[1]
-            CrossX =  Line[1][0]
+            CrossX =  Line[1][0]          
         }
         else{
             CrossX = (constants[1] - Line[0][1]) / (Line[0][0] - constants[0])
             CrossY = constants[0]*CrossX + constants[1]
+            CrossX = parseFloat(CrossX.toFixed(2))
+            CrossY = parseFloat(CrossY.toFixed(2))
+            let maxXLine = parseFloat(Math.max(Line[1][0] , Line[1][2]).toFixed(2))
+            let maxYLine = parseFloat(Math.max(Line[1][1] , Line[1][3]).toFixed(2))
+            let maxXNewLine = parseFloat(Math.max(Startpoint[0] , EndPoint[0]).toFixed(2))
+            let maxYNewLine = parseFloat(Math.max(Startpoint[1] , EndPoint[1]).toFixed(2))
+            let minXLine = parseFloat(Math.min(Line[1][0] , Line[1][2]).toFixed(2))
+            let minYLine = parseFloat(Math.min(Line[1][1] , Line[1][3]).toFixed(2))
+            let minXNewLine = parseFloat(Math.min(Startpoint[0] , EndPoint[0]).toFixed(2))
+            let minYNewLine = parseFloat(Math.min(Startpoint[1] , EndPoint[1]).toFixed(2))
+            if((CrossX <= maxXNewLine && CrossX < maxXLine) && (CrossX >= minXNewLine && CrossX >minXLine)){
+                if((CrossY <= maxYNewLine && CrossY < maxYLine) && (CrossY >= minYNewLine && CrossY >minYLine)){
+                    return true
+                }
+            }
+            return false
         }
     }
-    if(CrossX <= Math.max(Startpoint[0] , EndPoint[0]) && CrossX >= Math.min(Startpoint[0] , EndPoint[0])){
-        if(CrossY <= Math.max(Startpoint[1] , EndPoint[1]) && CrossY >= Math.min(Startpoint[1] , EndPoint[1])){
+    CrossX = parseFloat(CrossX.toFixed(2))
+    CrossY = parseFloat(CrossY.toFixed(2))
+    let maxXLine = parseFloat(Math.max(Line[1][0] , Line[1][2]).toFixed(2))
+    let maxYLine = parseFloat(Math.max(Line[1][1] , Line[1][3]).toFixed(2))
+    let maxXNewLine = parseFloat(Math.max(Startpoint[0] , EndPoint[0]).toFixed(2))
+    let maxYNewLine = parseFloat(Math.max(Startpoint[1] , EndPoint[1]).toFixed(2))
+    let minXLine = parseFloat(Math.min(Line[1][0] , Line[1][2]).toFixed(2))
+    let minYLine = parseFloat(Math.min(Line[1][1] , Line[1][3]).toFixed(2))
+    let minXNewLine = parseFloat(Math.min(Startpoint[0] , EndPoint[0]).toFixed(2))
+    let minYNewLine = parseFloat(Math.min(Startpoint[1] , EndPoint[1]).toFixed(2))
+    if((CrossX <= maxXNewLine && CrossX <= maxXLine) && (CrossX >= minXNewLine && CrossX >= minXLine)){
+        if((CrossY <= maxYNewLine && CrossY <= maxYLine) && (CrossY >= minYNewLine && CrossY >= minYLine)){
             return true
         }
     }
@@ -55,7 +87,7 @@ const CheckIfLineInPoly = (Startpoint,EndPoint ,AllLines , AllPoints) => {
             intersectionsCounter++
         }
     }
-    if(intersectionsCounter > 2){
+    if(intersectionsCounter >= 2){
         return false
     }
     if(!CheckIfPointInPolygon((Startpoint[0]+EndPoint[0])/2 ,(Startpoint[1]+EndPoint[1])/2  , AllPoints)){
@@ -193,14 +225,14 @@ const FilterNotPossibleDots = (index , Points) => {
 }
 
 
-const LineLength = (x,y,constants , LinePoints) => {
+const LineLength = (x,y,constants , LinePoints , crossingPoint) => {
     if(constants[0] === Infinity || constants[0] === -Infinity ){     
         return Math.abs(x - LinePoints[0])
     }
     if(constants[0] === -0 || constants[0] === 0){
         return Math.abs(y-LinePoints[1])
     }
-    return (Math.abs((-1 * constants[0]) + y - constants[1]))/(Math.sqrt(Math.pow(constants[0] + 1)))
+    return (Math.sqrt(Math.pow(x - crossingPoint[0] , 2) + Math.pow(y - crossingPoint[1] , 2)))
 }
 
 
@@ -251,7 +283,8 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
        
         if(PolygonStraightEquations[line][0][0] !== Infinity){
             if(PolygonStraightEquations[line][0][0] !== -0 || PolygonStraightEquations[line][0][0] !== 0){
-                 plumbConstants = [PolygonStraightEquations[line][0][0] * -1, (Point[1] - PolygonStraightEquations[line][0][1])/Point[0]]
+                let slope = -(1/PolygonStraightEquations[line][0][0])
+                plumbConstants = [slope, Point[1] - (slope* Point[0])]
             }
             // if the line is from kind y = ? than the plumb slope is infinity and his b doesnt exist because he is x= ? type
             else{
@@ -263,7 +296,7 @@ const filterStraightLines = (Point, PolygonStraightEquations) => {
             }
             // else if its regular line than calculate the point regulary
             else{
-                crossPoint = getCrossPointBetweenTwoLines(plumbConstants ,PolygonStraightEquations[line][0])
+                crossPoint = getCrossPointBetweenTwoLines(plumbConstants ,PolygonStraightEquations[line][0] , Point ,PolygonStraightEquations[line][1] )
             }
             if(crossPoint[1] > Math.min(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3]) && crossPoint[1] < Math.max(PolygonStraightEquations[line][1][1] ,PolygonStraightEquations[line][1][3])){
                 if(crossPoint[0] > Math.min(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2]) && crossPoint[0] < Math.max(PolygonStraightEquations[line][1][0] ,PolygonStraightEquations[line][1][2])){                
@@ -299,12 +332,14 @@ const GetLongestStraightLine = (BasePoints) => {
     {
         let filteredStraightEquations = filterStraightLines(BasePoints[point] ,PolygonStraightEquations)
         for(let line = 0 ; line < filteredStraightEquations.length; line++){
-            if(CheckIfLineInPoly([BasePoints[point][0] ,BasePoints[point][1]] ,getCrossPointBetweenTwoLines([filteredStraightEquations[line][0][0] * -1 ,BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))] , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1]), PolygonStraightEquations , BasePoints)){
-                if(LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] , filteredStraightEquations[line][1] ) > maxLength){
-                    maxLength = LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] ,  filteredStraightEquations[line][1]) 
+            let slope =-1/filteredStraightEquations[line][0][0]
+            let crossingPoint = getCrossPointBetweenTwoLines([slope ,BasePoints[point][1] - ((slope) * (BasePoints[point][0]))] , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1])
+            if(CheckIfLineInPoly([BasePoints[point][0] ,BasePoints[point][1]] ,crossingPoint, PolygonStraightEquations , BasePoints)){
+                if(LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] , filteredStraightEquations[line][1] , crossingPoint ) > maxLength){
+                    maxLength = LineLength(BasePoints[point][0] ,BasePoints[point][1],filteredStraightEquations[line][0] ,  filteredStraightEquations[line][1] , crossingPoint) 
                     let constants = []
-                    constants.push(filteredStraightEquations[line][0][0] * -1)
-                    let n = BasePoints[point][1] - ((filteredStraightEquations[line][0][0] * -1) * (BasePoints[point][0]))
+                    constants.push(slope)
+                    let n = BasePoints[point][1] - ((slope) * (BasePoints[point][0]))
                     constants.push(n)
                     Points = [BasePoints[point][0] , BasePoints[point][1], getCrossPointBetweenTwoLines( constants , filteredStraightEquations[line][0] , BasePoints[point] ,filteredStraightEquations[line][1] ) , indexOfPoint([filteredStraightEquations[line][1][0], filteredStraightEquations[line][1][1]] ,BasePoints )+1]
                 }     

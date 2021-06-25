@@ -118,6 +118,7 @@ const ShapeSplitter = (StartPoint, EndPoint , OriginShapePoints) => {
     for(let point = 0; point <= StartIndex ; point++){
         SecondShape = [...SecondShape , OriginShapePoints[point]]
     }
+    console.log(removeUselessPoints(FirstShape) ,removeUselessPoints(SecondShape) , 'splitted Shapes')
     return [removeUselessPoints(FirstShape) ,removeUselessPoints(SecondShape)]
 }
 
