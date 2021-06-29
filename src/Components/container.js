@@ -15,6 +15,7 @@ import ShapePoints from '../Algorithm/DotsSpreading';
 import algorithm from '../Algorithm/Algorithm'
 import { connect , dispatch } from "react-redux"
 import ProportionController from '../Algorithm/ShapesProportions'
+import Button from '@material-ui/core/Button'
 
 const Container = (props) => {
 

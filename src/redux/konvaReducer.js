@@ -1,15 +1,19 @@
+import { SatelliteSharp } from "@material-ui/icons"
 
 
 const initial_state = {
-    mode : 'Line',
+    mode : 'Polygon',
     stage : null,
     height : 0,
     Polygons : [],
     Rectangles : [],
     Circles : [],
     Windowstage : null,
-    AlgorithmResult:[]
+    AlgorithmResult:[],
+    points : [],
+    stateStack : []
 }
+
 
 
 const konvaReducer = (state = initial_state , action) => {
@@ -55,6 +59,64 @@ const konvaReducer = (state = initial_state , action) => {
                 ...state,
                 AlgorithmResult : action.newResult
             }  
+        case 'AddPoint':
+            let newPoints = [...state.points , action.newPoint]
+            return{
+                ...state,
+                points : newPoints
+            }
+        case 'emptyPoints':       
+            return{
+                ...state,
+                points : []
+            }
+        case 'actionTrigger' : 
+            let newState ={...state}
+            delete newState['stateStack']
+            let CopystateStack = [...state.stateStack , newState]
+            return{
+                ...state,
+                stateStack : CopystateStack
+            }
+        case 'Undo' : 
+            let lastState 
+            
+            if(state.stateStack.length <= 1){
+                lastState =  { mode : 'Polygon',
+                stage : null,
+                height : 0,
+                Polygons : [],
+                Rectangles : [],
+                Circles : [],
+                Windowstage : null,
+                AlgorithmResult:[],
+                points : [],
+                stateStack : []
+                }
+            }
+            else{
+                lastState = {...state.stateStack[state.stateStack.length -2]}
+                lastState['stateStack'] = state.stateStack
+                lastState['stateStack'].splice( lastState['stateStack'].length-1 , 1)
+                
+            }      
+            console.log(lastState, 'laststate')
+            return{
+                ...lastState                
+            }
+        case 'Reset':
+            return{
+                mode : 'Polygon',
+                stage : null,
+                height : 0,
+                Polygons : [],
+                Rectangles : [],
+                Circles : [],
+                Windowstage : null,
+                AlgorithmResult:[],
+                points : [],
+                stateStack : []
+            }
     }
     return state
 }
