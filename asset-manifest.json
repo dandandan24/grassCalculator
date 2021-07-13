@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/grassCalculator/static/css/main.ea1455b2.chunk.css",
+    "main.js": "/grassCalculator/static/js/main.e872034f.chunk.js",
+    "main.js.map": "/grassCalculator/static/js/main.e872034f.chunk.js.map",
+    "runtime-main.js": "/grassCalculator/static/js/runtime-main.48c4435f.js",
+    "runtime-main.js.map": "/grassCalculator/static/js/runtime-main.48c4435f.js.map",
+    "static/js/2.8562d26d.chunk.js": "/grassCalculator/static/js/2.8562d26d.chunk.js",
+    "static/js/2.8562d26d.chunk.js.map": "/grassCalculator/static/js/2.8562d26d.chunk.js.map",
+    "static/js/3.a3f017cf.chunk.js": "/grassCalculator/static/js/3.a3f017cf.chunk.js",
+    "static/js/3.a3f017cf.chunk.js.map": "/grassCalculator/static/js/3.a3f017cf.chunk.js.map",
+    "index.html": "/grassCalculator/index.html",
+    "static/css/main.ea1455b2.chunk.css.map": "/grassCalculator/static/css/main.ea1455b2.chunk.css.map",
+    "static/js/2.8562d26d.chunk.js.LICENSE.txt": "/grassCalculator/static/js/2.8562d26d.chunk.js.LICENSE.txt",
+    "static/media/explain.8f7dba14.PNG": "/grassCalculator/static/media/explain.8f7dba14.PNG"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.48c4435f.js",
+    "static/js/2.8562d26d.chunk.js",
+    "static/css/main.ea1455b2.chunk.css",
+    "static/js/main.e872034f.chunk.js"
+  ]
+}
